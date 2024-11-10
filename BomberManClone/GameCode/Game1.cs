@@ -103,6 +103,7 @@ namespace BomberManClone
         {
             kb_curr = Keyboard.GetState();
 
+            // close game
             if (kb_curr.IsKeyDown(Keys.Escape))
                 this.Exit();
 
