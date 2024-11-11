@@ -1,6 +1,4 @@
-﻿
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
@@ -24,6 +22,21 @@ namespace BomberManClone
                     m_Cells[x, y] = floorplan[y, x];
                 }
         }
+        public bool isWalkableForPlayer(Vector2 idx)
+        {
+            // Convert Vector2 to grid indices
+            int gridX = (int)idx.X;
+            int gridY = (int)idx.Y;
+            
+            switch (m_Cells[gridX, gridY])
+            {
+                case 1:
+                    return true;
+                default:
+                    return false;
+            }
+            
+        }
         public void drawme(SpriteBatch sb, List<Texture2D> tiles)
         {
             for (int x = 0; x < m_width; x++)
@@ -31,8 +44,8 @@ namespace BomberManClone
                 {
                     sb.Draw(tiles[m_Cells[x, y]], new Vector2(x * tiles[0].Width, y * tiles[0].Height),
                         Color.White);
-                  //  sb.DrawString(Game1.debugFont,
-                    //    m_Cells[x, y].ToString(),new Vector2(x * 16, y * 16), Color.White);
+                    sb.DrawString(Game1.debugFont,
+                        m_Cells[x, y].ToString(),new Vector2(x * 16, y * 16), Color.White);
                 }
         }
     }

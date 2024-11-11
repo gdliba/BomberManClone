@@ -29,6 +29,9 @@ namespace BomberManClone
         //Keyboard
         KeyboardState kb_curr, kb_old;
 
+        //Players
+        PC player1;
+
         #endregion
 
 
@@ -61,6 +64,9 @@ namespace BomberManClone
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _renderTarget = new RenderTarget2D(_spriteBatch.GraphicsDevice, 480, 320);
+
+            //Players
+            player1 = new PC(new Point(1, 1), Content.Load<Texture2D>("Characters\\pc"), 3, 8);
 
             // Setting up Tile Textures
             tiles.Add(Content.Load<Texture2D>("Tiles\\void"));
@@ -99,19 +105,23 @@ namespace BomberManClone
 
         }
 
-        protected override void Update(GameTime gameTime)
+        protected override void Update(GameTime gt)
         {
             kb_curr = Keyboard.GetState();
+
+            #region Update States
+            player1.updateme(gt,currentMap,kb_curr,kb_old);
+            #endregion
 
             // close game
             if (kb_curr.IsKeyDown(Keys.Escape))
                 this.Exit();
 
-            base.Update(gameTime);
+            base.Update(gt);
             kb_old = kb_curr;
         }
 
-        protected override void Draw(GameTime gameTime)
+        protected override void Draw(GameTime gt)
         {
             GraphicsDevice.Clear(Color.Black);
 
@@ -119,12 +129,14 @@ namespace BomberManClone
             GraphicsDevice.SetRenderTarget(_renderTarget);
 
             _spriteBatch.Begin();
-            //Map
+            // Map
             currentMap.drawme(_spriteBatch, tiles);
+            // Player
+            player1.drawme(_spriteBatch, gt, tiles[0].Width, tiles[1].Height);
 #if DEBUG
             _spriteBatch.DrawString(debugFont, _graphics.PreferredBackBufferWidth + "x " + _graphics.PreferredBackBufferHeight
-                + "\nfps: " + (int)(1 / gameTime.ElapsedGameTime.TotalSeconds) + "ish",
-                new Vector2(10, 10), Color.White);
+                + "\nfps: " + (int)(1 / gt.ElapsedGameTime.TotalSeconds) + "ish",
+                new Vector2(10, 10), Color.White*.5f);
 #endif
             _spriteBatch.End();
             #region Screen Scaling
@@ -136,7 +148,7 @@ namespace BomberManClone
             #endregion
 
 
-            base.Draw(gameTime);
+            base.Draw(gt);
         }
     }
 }
