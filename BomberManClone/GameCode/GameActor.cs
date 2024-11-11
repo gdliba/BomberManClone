@@ -45,7 +45,7 @@ namespace BomberManClone
         }
         public void moveme(Direction moveDir, float deltaTime)
         {
-            float speed = 10f;
+            float speed = .1f;
             m_facing = moveDir;
 
             switch (moveDir)

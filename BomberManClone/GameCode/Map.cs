@@ -35,7 +35,20 @@ namespace BomberManClone
                 default:
                     return false;
             }
-            
+        }
+        public List<Rectangle> getObstacles()
+        {
+            var obstacles = new List<Rectangle>();
+            for (int y = 0; y < m_Cells.GetLength(1); y++)
+            {
+                for (int x = 0; x < m_Cells.GetLength(0); x++)
+                {
+
+                    if (m_Cells[x, y] == 2)
+                        obstacles.Add(new Rectangle(x, y,m_width,m_height));
+                }
+            }
+            return obstacles;
         }
         public void drawme(SpriteBatch sb, List<Texture2D> tiles)
         {
