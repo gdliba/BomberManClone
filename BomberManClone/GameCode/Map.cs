@@ -45,6 +45,10 @@ namespace BomberManClone
                 return true;
             return false;
         }
+        //public void PlayerIsOccupyingCell(Point idx)                                                      // TODO (player must occupy a cell, but must be able to reset it when they move)
+        //{
+        //    m_Cells[idx.X, idx.Y] = 0;
+        //}
         public void RegularBombExplosion(Point idx, GameTime gt, int explosionRange)
         {
             // Local Variables
