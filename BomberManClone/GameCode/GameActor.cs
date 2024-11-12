@@ -16,6 +16,7 @@ namespace BomberManClone
     {
         protected Direction m_facing;
         protected Vector2 m_position;
+        protected Vector2 m_targetLocation;
 
         protected Texture2D m_txr;
         private int m_frameCount;
@@ -26,12 +27,11 @@ namespace BomberManClone
         private int m_fps;
 
         // making life easier by making certain points into variables
-        protected Vector2 m_northCell, m_southCell, m_eastCell, m_westCell;
+        protected Point m_northCell, m_southCell, m_eastCell, m_westCell;
 
         public GameActor(Point startPos, Texture2D txr, int frameCount, int fps)
         {
-            m_position.X = startPos.X;
-            m_position.Y = startPos.Y;
+            m_targetLocation = m_position = startPos.ToVector2();
             m_txr = txr;
 
             m_frameCount = frameCount;
@@ -41,31 +41,32 @@ namespace BomberManClone
             m_updateTrigger = 0;
             m_fps = fps;
             m_facing = Direction.South;
-
         }
-        public void moveme(Direction moveDir, float deltaTime)
+        public void MoveMe(Direction moveDir)
         {
-            float speed = .1f;
+            if (m_targetLocation != m_position)
+                return;
+
             m_facing = moveDir;
 
             switch (moveDir)
             {
                 case Direction.North:
-                    m_position.Y-=speed * deltaTime;
+                    m_targetLocation += new Vector2(0, -1);
                     break;
                 case Direction.South:
-                    m_position.Y+=speed * deltaTime;
+                    m_targetLocation += new Vector2(0, +1);
                     break;
                 case Direction.East:
-                    m_position.X+=speed * deltaTime;
+                    m_targetLocation += new Vector2(+1, 0);
                     break;
                 case Direction.West:
-                    m_position.X-=speed * deltaTime;
+                    m_targetLocation += new Vector2(-1, 0);
                     break;
             }
         }
 
-        public virtual void drawme(SpriteBatch sb, GameTime gt, int tileWidth, int tileHeight)
+        public virtual void DrawMe(SpriteBatch sb, GameTime gt, int tileWidth, int tileHeight)
         {
             m_sourceRect.Y = (int)m_facing * m_sourceRect.Height;
             m_updateTrigger += (float)gt.ElapsedGameTime.TotalSeconds * m_fps;

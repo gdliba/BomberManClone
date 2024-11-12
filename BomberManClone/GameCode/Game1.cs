@@ -32,6 +32,9 @@ namespace BomberManClone
         //Players
         PC player1;
 
+        //Bomb
+        List<Bomb> bombs;
+
         #endregion
 
 
@@ -43,7 +46,7 @@ namespace BomberManClone
             IsMouseVisible = true;
 
             // Window size and window title settings
-            Window.Title = "Dungeon Escape!";
+            Window.Title = "Supermarket Reloaded";
             _graphics.PreferredBackBufferWidth = 1088;
             _graphics.PreferredBackBufferHeight = 1088;
         }
@@ -52,6 +55,7 @@ namespace BomberManClone
         {
             // List initialisations
             tiles = new List<Texture2D>();
+            bombs = new List<Bomb>();
 
 
 #if DEBUG
@@ -65,8 +69,12 @@ namespace BomberManClone
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _renderTarget = new RenderTarget2D(_spriteBatch.GraphicsDevice, 480, 320);
 
-            //Players
+            // Players
             player1 = new PC(new Point(1, 1), Content.Load<Texture2D>("Characters\\pc"), 3, 8);
+
+            // Bombs
+            bombs.Add(new Bomb (Content.Load<Texture2D>("Objects\\plate"), new Point(4, 1)));
+
 
             // Setting up Tile Textures
             tiles.Add(Content.Load<Texture2D>("Tiles\\void"));
@@ -110,7 +118,20 @@ namespace BomberManClone
             kb_curr = Keyboard.GetState();
 
             #region Update States
-            player1.updateme(gt,currentMap,kb_curr,kb_old);
+            
+            var newValue = player1.UpdateMe(gt, currentMap, kb_curr, kb_old);
+            if (newValue != 0)
+            {
+                bombs.Add
+            }
+            if (goblins[i].State == GoblinStates.Left)
+                goblins.RemoveAt(i);
+            for (int i = 0; i < bombs.Count; i++)
+            {
+                bombs[i].UpdateMe(gt,currentMap);
+                if (bombs[i].State==BombStates.Dead)
+                    bombs.RemoveAt(i);
+            }
             #endregion
 
             // close game
@@ -130,9 +151,15 @@ namespace BomberManClone
 
             _spriteBatch.Begin();
             // Map
-            currentMap.drawme(_spriteBatch, tiles);
+            currentMap.DrawMe(_spriteBatch, tiles);
             // Player
-            player1.drawme(_spriteBatch, gt, tiles[0].Width, tiles[1].Height);
+            player1.DrawMe(_spriteBatch, gt, tiles[0].Width, tiles[1].Height);
+
+            // Bombs
+            for (int i = 0; i < bombs.Count; i++)
+            {
+                bombs[i].DrawMe(_spriteBatch);
+            }
 #if DEBUG
             _spriteBatch.DrawString(debugFont, _graphics.PreferredBackBufferWidth + "x " + _graphics.PreferredBackBufferHeight
                 + "\nfps: " + (int)(1 / gt.ElapsedGameTime.TotalSeconds) + "ish",

@@ -22,13 +22,9 @@ namespace BomberManClone
                     m_Cells[x, y] = floorplan[y, x];
                 }
         }
-        public bool isWalkableForPlayer(Vector2 idx)
+        public bool IsWalkableForPlayer(Point idx)
         {
-            // Convert Vector2 to grid indices
-            int gridX = (int)idx.X;
-            int gridY = (int)idx.Y;
-            
-            switch (m_Cells[gridX, gridY])
+            switch (m_Cells[idx.X, idx.Y])
             {
                 case 1:
                     return true;
@@ -36,21 +32,29 @@ namespace BomberManClone
                     return false;
             }
         }
-        public List<Rectangle> getObstacles()
+        public void SetCellToBomb(Point idx)
         {
-            var obstacles = new List<Rectangle>();
-            for (int y = 0; y < m_Cells.GetLength(1); y++)
-            {
-                for (int x = 0; x < m_Cells.GetLength(0); x++)
-                {
+            m_Cells[idx.X, idx.Y] = 0;
+        }
+        public void RegularBombExplosion(Point idx)
+        {
+            PropagateExplosion(new Point(1, 0));
+            PropagateExplosion(new Point(-1, 0));
+            PropagateExplosion(new Point(0, 1));
+            PropagateExplosion(new Point(0, -1));
 
-                    if (m_Cells[x, y] == 2)
-                        obstacles.Add(new Rectangle(x, y,m_width,m_height));
+            void PropagateExplosion(Point dir)
+            {
+                for (int i = 1; i < 4; i++)
+                {
+                    if (m_Cells[idx.X + dir.X * i, idx.Y + dir.Y * i] == 2) 
+                        break;
+
+                    m_Cells[idx.X + dir.X * i, idx.Y + dir.Y * i] = 0;
                 }
             }
-            return obstacles;
         }
-        public void drawme(SpriteBatch sb, List<Texture2D> tiles)
+        public void DrawMe(SpriteBatch sb, List<Texture2D> tiles)
         {
             for (int x = 0; x < m_width; x++)
                 for (int y = 0; y < m_height; y++)
