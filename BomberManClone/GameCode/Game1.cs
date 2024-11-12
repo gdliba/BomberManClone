@@ -73,17 +73,20 @@ namespace BomberManClone
             player1 = new PC(new Point(1, 1), Content.Load<Texture2D>("Characters\\pc"), 3, 8);
 
             // Bombs
-            bombs.Add(new Bomb (Content.Load<Texture2D>("Objects\\plate"), new Point(4, 1)));
+            //bombs.Add(new Bomb (Content.Load<Texture2D>("Objects\\plate"), new Point(4, 1)));
 
 
             // Setting up Tile Textures
-            tiles.Add(Content.Load<Texture2D>("Tiles\\void"));
-            tiles.Add(Content.Load<Texture2D>("Tiles\\floor"));
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wall"));
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wallL"));
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wallR"));
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wallTL"));
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wallTR"));
+            tiles.Add(Content.Load<Texture2D>("Tiles\\void"));  // 0
+            tiles.Add(Content.Load<Texture2D>("Tiles\\floor")); // 1
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wall"));  // 2
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wallL")); // 3
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wallR")); // 4
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wallTL"));// 5
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wallTR"));// 6
+
+            tiles.Add(Content.Load<Texture2D>("Tiles\\void"));  // 7
+
 
             // Tile Layout
             testfloor = new int[17, 17]
@@ -112,20 +115,40 @@ namespace BomberManClone
             currentMap = new Map(testfloor);
 
         }
+        public bool PlaceBomb(Point pos, GameTime gt)
+        {
+            Bomb newBomb = new Bomb(Content.Load<Texture2D>("Objects\\plate"), pos);
+            bombs.Add(newBomb);
+
+            // Subscribe to the OnExplode event
+            newBomb.OnExplode += player1.IncreaseBombCount;
+
+            // Iterate bombs to check for explosions and remove dead bombs
+            for (int i = 0; i < bombs.Count; i++)
+            {
+                bombs[i].UpdateMe(gt, currentMap);
+                if (bombs[i].State == BombStates.Dead)
+                {
+                    bombs.RemoveAt(i);
+                    return true;
+                }
+            }
+            return false;
+        }
 
         protected override void Update(GameTime gt)
         {
             kb_curr = Keyboard.GetState();
 
             #region Update States
-            
-            var newValue = player1.UpdateMe(gt, currentMap, kb_curr, kb_old);
-            if (newValue != 0)
+            // Player
+            var canPlaceBomb = player1.InPlay(gt, currentMap, kb_curr, kb_old);
+            if (canPlaceBomb)
             {
-                bombs.Add
+                PlaceBomb(player1.Position.ToPoint(), gt);
             }
-            if (goblins[i].State == GoblinStates.Left)
-                goblins.RemoveAt(i);
+
+            // Bombs
             for (int i = 0; i < bombs.Count; i++)
             {
                 bombs[i].UpdateMe(gt,currentMap);
