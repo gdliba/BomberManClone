@@ -17,7 +17,7 @@ namespace BomberManClone
             m_hasMoved = false;
             m_numberOfBombs = 2;
         }
-        public int UpdateMe(GameTime gameTime, Map currentMap,
+        public bool UpdateMe(GameTime gameTime, Map currentMap,
             KeyboardState kb_curr, KeyboardState kb_old)
         {
             #region setting cell locations
@@ -76,8 +76,6 @@ namespace BomberManClone
                     m_numberOfBombs--;
                     return 1;
                 }
-                else
-                    return 2;
             }
             else
                 return 0;
