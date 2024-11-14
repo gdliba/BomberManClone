@@ -4,9 +4,20 @@ using System.Collections.Generic;
 
 namespace BomberManClone
 {
+    class Cell
+    {
+        public int Type { get; set; }
+        public float Duration { get; set; }
+
+        public Cell(int type, float duration = -1)
+        {
+            Type = type;
+            Duration = duration;
+        }
+    }
     class Map
     {
-        private int[,] m_Cells;
+        private Cell[,] m_Cells;
         private int m_width;
         private int m_height;
 
@@ -17,17 +28,36 @@ namespace BomberManClone
             m_width = floorplan.GetLength(0);
             m_height = floorplan.GetLength(1);
 
-            m_Cells = new int[m_width, m_height];
+            m_Cells = new Cell[m_width, m_height];
             for (int x = 0; x < m_width; x++)
                 for (int y = 0; y < m_height; y++)
                 {
-                    m_Cells[x, y] = floorplan[y, x];
+                    m_Cells[x, y] = new Cell(floorplan[y, x]);
                 }
             m_explosionDuration = 2f;
         }
+        public void Update(GameTime gt)
+        {
+            for (int x = 0; x < m_width; x++)
+                for (int y = 0; y < m_height; y++)
+                {
+                    if (m_Cells[x, y].Duration != -1)
+                    {
+                        if(m_Cells[x, y].Duration > 0)
+                        {
+                            m_Cells[x, y].Duration -=(float)gt.ElapsedGameTime.TotalSeconds;
+                        }
+                        else
+                        {
+                            m_Cells[x, y].Duration = -1;
+                            m_Cells[x, y].Type = 1;
+                        }
+                    }
+                }
+        }
         public bool IsWalkableForPlayer(Point idx)
         {
-            switch (m_Cells[idx.X, idx.Y])
+            switch (m_Cells[idx.X, idx.Y].Type)
             {
                 case 1:
                     return true;
@@ -35,33 +65,46 @@ namespace BomberManClone
                     return false;
             }
         }
+        public bool IsWalkableForGhost(Point idx)
+        {
+            switch (m_Cells[idx.X, idx.Y].Type)
+            {
+                case 3:
+                case 4:
+                case 8:
+                    return false;
+                default:
+                    return true;
+            }
+        }
         public void SetCellToBomb(Point idx)
         {
-            m_Cells[idx.X, idx.Y] = 0;
+            m_Cells[idx.X, idx.Y].Type = 0;
         }
         public bool IsCellExploding(Point idx)
         {
-            if (m_Cells[idx.X, idx.Y] == 7)
+            if (m_Cells[idx.X, idx.Y].Type == 7)
                 return true;
             return false;
         }
-        //public void PlayerIsOccupyingCell(Point idx)                                                      // TODO (player must occupy a cell, but must be able to reset it when they move)
-        //{
-        //    m_Cells[idx.X, idx.Y] = 0;
-        //}
+        public void PlayerIsOccupyingCell(Point idx)
+        {
+            m_Cells[idx.X, idx.Y].Type = 0;
+        }
+        public void SetCellBackToFloor(Point idx)
+        {
+            m_Cells[idx.X, idx.Y].Type = 1;
+        }
         public void RegularBombExplosion(Point idx, GameTime gt, int explosionRange)
         {
-            // Local Variables
-            List<Point> affectedCells = new List<Point>();
-
             PropagateExplosion(new Point(1, 0));
             PropagateExplosion(new Point(-1, 0));
             PropagateExplosion(new Point(0, 1));
             PropagateExplosion(new Point(0, -1));
 
-            m_Cells[idx.X,idx.Y] = 7;
-            affectedCells.Add(new Point(idx.X, idx.Y));
-            //DoExplosionDurationCountdown(gt, affectedCells);                                              // TODO FIX
+            m_Cells[idx.X, idx.Y].Type = 7;
+            m_Cells[idx.X, idx.Y].Duration = m_explosionDuration;
+
 
             void PropagateExplosion(Point dir)
             {
@@ -75,44 +118,27 @@ namespace BomberManClone
                         break;
 
                     // Stop explosion propagation if it hits a wall or other similar
-                    if (m_Cells[newX, newY] == 2 || m_Cells[newX, newY] == 3)
+                    if (m_Cells[newX, newY].Type == 2 || m_Cells[newX, newY].Type == 3 
+                        || m_Cells[newX, newY].Type == 4 || m_Cells[newX, newY].Type == 8)
                         break;
 
-                    m_Cells[newX, newY] = 7;
+                    m_Cells[newX, newY].Type = 7;
+                    m_Cells[newX, newY].Duration = m_explosionDuration+i*.1f;
 
-                    // Add the affected cell to the list
-                    affectedCells.Add(new Point(newX, newY));
 
                 }
             }
 
         }
-                                                                                                               // TODO FIX
-        //public void DoExplosionDurationCountdown(GameTime gt, List<Point> affectedCells)
-        //{
-           
-        //    if (m_explosionDuration > 0)
-        //        do
-        //            m_explosionDuration -= (float)gt.ElapsedGameTime.TotalSeconds;
-        //        while (m_explosionDuration > 0);
-        //    void TurnTilesBackToNormal(List<Point> affectedCells)
-        //    {
-        //        for (int i = 0; i < affectedCells.Count; i++)
-        //        {
-        //            m_Cells[affectedCells[i].X, affectedCells[i].Y] = 3;
-        //        }
-        //    }
-        //    TurnTilesBackToNormal(affectedCells);
-        //}
         public void DrawMe(SpriteBatch sb, List<Texture2D> tiles)
         {
             for (int x = 0; x < m_width; x++)
                 for (int y = 0; y < m_height; y++)
                 {
-                    sb.Draw(tiles[m_Cells[x, y]], new Vector2(x * tiles[0].Width, y * tiles[0].Height),
+                    sb.Draw(tiles[m_Cells[x, y].Type], new Vector2(x * tiles[0].Width, y * tiles[0].Height),
                         Color.White);
                     sb.DrawString(Game1.debugFont,
-                        m_Cells[x, y].ToString(),new Vector2(x * 16, y * 16), Color.White);
+                        m_Cells[x, y].Type.ToString(), new Vector2(x * 16, y * 16), Color.White);
                 }
         }
     }

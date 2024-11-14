@@ -47,6 +47,7 @@ namespace BomberManClone
                     m_state = BombStates.Primed;
                     break;
                 case BombStates.Primed:
+                    currentMap.SetCellToBomb(m_position);
                     CountDown(gt);
                     break;
                 case BombStates.Exploding:

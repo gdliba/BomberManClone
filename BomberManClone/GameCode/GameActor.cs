@@ -17,6 +17,7 @@ namespace BomberManClone
         protected Direction m_facing;
         protected Vector2 m_position;
         protected Vector2 m_targetLocation;
+        protected Vector2 m_sourceLocation;
 
         protected Texture2D m_txr;
         private int m_frameCount;
@@ -66,7 +67,7 @@ namespace BomberManClone
             }
         }
 
-        public virtual void DrawMe(SpriteBatch sb, GameTime gt, int tileWidth, int tileHeight)
+        public virtual void DrawMe(SpriteBatch sb, GameTime gt, int tileWidth, int tileHeight, Color color)
         {
             m_sourceRect.Y = (int)m_facing * m_sourceRect.Height;
             m_updateTrigger += (float)gt.ElapsedGameTime.TotalSeconds * m_fps;
@@ -78,7 +79,7 @@ namespace BomberManClone
                 m_sourceRect.X = m_animFrame * m_sourceRect.Width;
             }
             sb.Draw(m_txr,
-                new Vector2(m_position.X*16 ,(m_position.Y*16)-4), m_sourceRect, Color.White);
+                new Vector2(m_position.X*16 ,(m_position.Y*16)-4), m_sourceRect, color);
         }
     }
 }
