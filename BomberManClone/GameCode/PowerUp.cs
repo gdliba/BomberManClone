@@ -19,6 +19,9 @@ namespace BomberManClone
     {
         private PowerUpType m_type;
         private PowerUpState m_state;
+        public PowerUpState State {  get { return m_state; } }
+
+        private float m_powerUpDuration;
 
         public PowerUp(Texture2D txr, Point position, PowerUpType type)
             : base(txr, position)
@@ -27,6 +30,7 @@ namespace BomberManClone
             m_position = position;
             m_type = type;
             m_state = PowerUpState.Spawn;
+            m_powerUpDuration = 10f;
         }
         public void UpdateMe(GameTime gt, Map currentMap)
         {
@@ -45,7 +49,9 @@ namespace BomberManClone
         }
         public void InPlay(GameTime gt, Map currentMap)
         {
-
+            m_powerUpDuration -= (float)gt.ElapsedGameTime.TotalSeconds;
+            if (m_powerUpDuration < 0)
+                m_state = PowerUpState.Dead;
         }
         public override void DrawMe(SpriteBatch sb)
         {

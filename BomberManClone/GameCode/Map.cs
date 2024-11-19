@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace BomberManClone
 {
@@ -23,6 +24,7 @@ namespace BomberManClone
 
         float m_explosionDuration;
         float m_occupiedCellDuration;
+        float m_powerUpCellDuration;
 
         public Map(int[,] floorplan)
         {
@@ -37,6 +39,7 @@ namespace BomberManClone
                 }
             m_explosionDuration = 2f;
             m_occupiedCellDuration = .03f;
+            m_powerUpCellDuration = 10f;
         }
         public void Update(GameTime gt)
         {
@@ -64,6 +67,7 @@ namespace BomberManClone
         public void PowerUpOnCell(Point idx)
         {
             m_Cells[idx.X, idx.Y].Type = 10;
+            m_Cells[idx.X, idx.Y].Duration = m_powerUpCellDuration;
         }
         public bool IsWalkableForPlayer(Point idx)
         {
@@ -156,6 +160,25 @@ namespace BomberManClone
                 }
             }
 
+        }
+        public void SpawnCrates(Texture2D txr, List<Crate> crates)
+        {
+            for (int y = 0; y < m_Cells.GetLength(1); y++)
+            {
+                for(int x = 0; x < m_Cells.GetLength(0); x++)
+                {
+                    if (m_Cells[x, y].Type == 1)
+                    {
+                        var roll = Game1.RNG.Next(0, 10);
+                        if (roll < 5)
+                        {
+                            Crate newcrate = new Crate(txr, new Point(x, y));
+                            crates.Add(newcrate);
+                        }
+
+                    }
+                }
+            }
         }
         public void DrawMe(SpriteBatch sb, List<Texture2D> tiles)
         {

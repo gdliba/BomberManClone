@@ -41,6 +41,7 @@ namespace BomberManClone
 
         // Crates
         List<Crate> crates;
+        List<Point> crateSpawnPoints;
 
         #endregion
 
@@ -65,6 +66,7 @@ namespace BomberManClone
             bombs = new List<Bomb>();
             powerUps = new List<PowerUp>();
             crates = new List<Crate>();
+            crateSpawnPoints = new List<Point>();
 
 
 #if DEBUG
@@ -153,8 +155,8 @@ namespace BomberManClone
            };
 
             // Use this Map
-            currentMap = new Map(testfloor);
-
+            currentMap = new Map(testfloor2);
+            currentMap.SpawnCrates(Content.Load<Texture2D>("Objects\\crate_01"), crates);
         }
         public bool PlaceBomb(Point pos, GameTime gt)
         {
@@ -176,7 +178,7 @@ namespace BomberManClone
             }
             return false;
         }
-        public bool SpawnPowerUp(Point pos, GameTime gt)
+        public void SpawnPowerUp(Point pos, GameTime gt)
         {
             var randomPowerup = RNG.Next(0, 3);
             if (randomPowerup == 0)
@@ -187,9 +189,6 @@ namespace BomberManClone
                 randomPUText = explosionRadiusPUText;
             PowerUp newPowerUp = new PowerUp(randomPUText, pos, PowerUpType.Speed);
             powerUps.Add(newPowerUp);
-
-
-            return true;
         }
 
         protected override void Update(GameTime gt)
@@ -219,6 +218,8 @@ namespace BomberManClone
             for (int i = 0; i < powerUps.Count; i++)
             {
                 powerUps[i].UpdateMe(gt, currentMap);
+                if (powerUps[i].State==PowerUpState.Dead)
+                    powerUps.RemoveAt(i);
             }
 
             // Crates
