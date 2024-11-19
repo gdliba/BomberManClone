@@ -23,7 +23,7 @@ namespace BomberManClone
 
         // Tiles/Map
         List<Texture2D> tiles;
-        int[,] testfloor;
+        int[,] testfloor, testfloor2;
         Map currentMap;
 
         //Keyboard
@@ -37,6 +37,7 @@ namespace BomberManClone
 
         // PowerUps
         List<PowerUp> powerUps;
+        Texture2D speedPUText, extraBombPUText, explosionRadiusPUText, randomPUText; 
 
         // Crates
         List<Crate> crates;
@@ -83,6 +84,12 @@ namespace BomberManClone
             // Bombs
             //bombs.Add(new Bomb (Content.Load<Texture2D>("Objects\\plate"), new Point(4, 1)));
 
+            // PowerUps
+            speedPUText = Content.Load<Texture2D>("Objects\\powerup_01");
+            extraBombPUText = Content.Load<Texture2D>("Objects\\powerup_02");
+            explosionRadiusPUText = Content.Load<Texture2D>("Objects\\powerup_03");
+            powerUps.Add(new PowerUp(explosionRadiusPUText, new Point(4, 5), PowerUpType.Speed));
+
             // Crates
             crates.Add(new Crate(Content.Load<Texture2D>("Objects\\crate_01"), new Point(4, 1)));
 
@@ -97,10 +104,10 @@ namespace BomberManClone
             tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));// 6
 
             tiles.Add(Content.Load<Texture2D>("Tiles\\void"));  // 7
-
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_01"));  // 8
-
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));  // 8
             tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 9
+            tiles.Add(Content.Load<Texture2D>("Tiles\\occupiedCell"));  // 10
+
 
 
             // Tile Layout
@@ -125,6 +132,25 @@ namespace BomberManClone
                 { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}
 
             };
+            testfloor2 = new int[15, 15]
+           {
+                { 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 6},
+                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
+                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
+                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
+                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
+                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
+                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
+                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
+                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
+                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
+                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
+                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
+                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1 ,2, 1, 4},
+                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 4},
+                { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}
+
+           };
 
             // Use this Map
             currentMap = new Map(testfloor);
@@ -152,7 +178,14 @@ namespace BomberManClone
         }
         public bool SpawnPowerUp(Point pos, GameTime gt)
         {
-            PowerUp newPowerUp = new PowerUp(Content.Load<Texture2D>("Objects\\plate"), pos);
+            var randomPowerup = RNG.Next(0, 3);
+            if (randomPowerup == 0)
+                randomPUText = speedPUText;
+            else if (randomPowerup == 1)
+                randomPUText = extraBombPUText;
+            else if (randomPowerup == 2)
+                randomPUText = explosionRadiusPUText;
+            PowerUp newPowerUp = new PowerUp(randomPUText, pos, PowerUpType.Speed);
             powerUps.Add(newPowerUp);
 
 
@@ -185,15 +218,20 @@ namespace BomberManClone
             // PowerUps
             for (int i = 0; i < powerUps.Count; i++)
             {
-                powerUps[i].UpdateMe(gt);
+                powerUps[i].UpdateMe(gt, currentMap);
             }
 
             // Crates
             for (int i = 0; i < crates.Count; i++)
             {
                 crates[i].UpdateMe(currentMap);
+                var spawnPowerUp = crates[i].UpdateMe(currentMap);
+                    if (spawnPowerUp != null)
+                        SpawnPowerUp(crates[i].Position, gt);
                 if (crates[i].State == CrateState.Dead)
+                {
                     crates.RemoveAt(i);
+                }
             }
 
             #endregion

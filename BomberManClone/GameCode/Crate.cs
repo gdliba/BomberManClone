@@ -13,6 +13,8 @@ namespace BomberManClone
     {
         private CrateState m_state;
         public CrateState State { get { return m_state; } }
+        public Point Position { get { return m_position; } }
+
         public Crate(Texture2D txr, Point pos)
             :base (txr, pos)
         {

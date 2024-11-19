@@ -22,6 +22,7 @@ namespace BomberManClone
         private int m_height;
 
         float m_explosionDuration;
+        float m_occupiedCellDuration;
 
         public Map(int[,] floorplan)
         {
@@ -35,6 +36,7 @@ namespace BomberManClone
                     m_Cells[x, y] = new Cell(floorplan[y, x]);
                 }
             m_explosionDuration = 2f;
+            m_occupiedCellDuration = .03f;
         }
         public void Update(GameTime gt)
         {
@@ -59,12 +61,17 @@ namespace BomberManClone
         {
             m_Cells[idx.X, idx.Y].Type = 9;
         }
+        public void PowerUpOnCell(Point idx)
+        {
+            m_Cells[idx.X, idx.Y].Type = 10;
+        }
         public bool IsWalkableForPlayer(Point idx)
         {
             switch (m_Cells[idx.X, idx.Y].Type)
             {
                 case 1:
                 case 7:
+                case 10:
                     return true;
                 default:
                     return false;
@@ -105,10 +112,7 @@ namespace BomberManClone
         public void PlayerIsOccupyingCell(Point idx)
         {
             m_Cells[idx.X, idx.Y].Type = 0;
-        }
-        public void SetCellBackToFloor(Point idx)
-        {
-            m_Cells[idx.X, idx.Y].Type = 1;
+            m_Cells[idx.X, idx.Y].Duration = m_occupiedCellDuration;
         }
         public void RegularBombExplosion(Point idx, GameTime gt, int explosionRange)
         {

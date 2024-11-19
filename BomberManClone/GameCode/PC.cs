@@ -48,9 +48,14 @@ namespace BomberManClone
         public bool InPlay(GameTime gameTime, Map currentMap,
             KeyboardState kb_curr, KeyboardState kb_old)
         {
+
             if (currentMap.IsCellExploding(m_position.ToPoint()))
                 TakeAHit(currentMap);
-                
+
+            // Declare that you are occupying the cell so that other players cannot walk into you
+            currentMap.PlayerIsOccupyingCell(m_position.ToPoint());
+
+
             #region setting cell locations
             m_northCell = new Point((int)m_targetLocation.X, (int)m_targetLocation.Y - 1);
             m_southCell = new Point((int)m_targetLocation.X, (int)m_targetLocation.Y + 1);
@@ -110,11 +115,6 @@ namespace BomberManClone
                     m_hasMoved = false;
                     // Snap to the target location
                     m_position = m_targetLocation;
-                    // Declare that you are occupying the cell so that other players cannot walk into you
-                    currentMap.PlayerIsOccupyingCell(m_position.ToPoint());
-                    // Set the cell you were previously occupying back to a walkable tile
-                    currentMap.SetCellBackToFloor(m_sourceLocation.ToPoint());
-
                 }
             }
             #endregion
