@@ -55,7 +55,22 @@ namespace BomberManClone
                     }
                 }
         }
+        public void CrateOccupyingCell(Point idx)
+        {
+            m_Cells[idx.X, idx.Y].Type = 9;
+        }
         public bool IsWalkableForPlayer(Point idx)
+        {
+            switch (m_Cells[idx.X, idx.Y].Type)
+            {
+                case 1:
+                case 7:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        public bool IsCellSafe(Point idx)
         {
             switch (m_Cells[idx.X, idx.Y].Type)
             {
@@ -117,8 +132,16 @@ namespace BomberManClone
                     if (newX < 0 || newX >= m_Cells.GetLength(0) || newY < 0 || newY >= m_Cells.GetLength(1))
                         break;
 
+                    // Check if hitting a Crate
+                    if (m_Cells[newX, newY].Type == 9)
+                    {
+                        m_Cells[newX, newY].Type = 7;
+                        m_Cells[newX, newY].Duration = m_explosionDuration + i * .1f;
+                        break;
+                    }
+
                     // Stop explosion propagation if it hits a wall or other similar
-                    if (m_Cells[newX, newY].Type == 2 || m_Cells[newX, newY].Type == 3 
+                    else if (m_Cells[newX, newY].Type == 2 || m_Cells[newX, newY].Type == 3 
                         || m_Cells[newX, newY].Type == 4 || m_Cells[newX, newY].Type == 8)
                         break;
 
@@ -138,7 +161,7 @@ namespace BomberManClone
                     sb.Draw(tiles[m_Cells[x, y].Type], new Vector2(x * tiles[0].Width, y * tiles[0].Height),
                         Color.White);
                     sb.DrawString(Game1.debugFont,
-                        m_Cells[x, y].Type.ToString(), new Vector2(x * 16, y * 16), Color.White);
+                        m_Cells[x, y].Type.ToString(), new Vector2(x * 64+32, y * 64+32), Color.Lavender);
                 }
         }
     }

@@ -38,6 +38,9 @@ namespace BomberManClone
         // PowerUps
         List<PowerUp> powerUps;
 
+        // Crates
+        List<Crate> crates;
+
         #endregion
 
 
@@ -60,6 +63,7 @@ namespace BomberManClone
             tiles = new List<Texture2D>();
             bombs = new List<Bomb>();
             powerUps = new List<PowerUp>();
+            crates = new List<Crate>();
 
 
 #if DEBUG
@@ -71,27 +75,32 @@ namespace BomberManClone
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _renderTarget = new RenderTarget2D(_spriteBatch.GraphicsDevice, 480, 320);
+            _renderTarget = new RenderTarget2D(_spriteBatch.GraphicsDevice, 1088, 1088);
 
             // Players
-            player1 = new PC(new Point(1, 1), Content.Load<Texture2D>("Characters\\pc"), 3, 8);
+            player1 = new PC(new Point(1, 1), Content.Load<Texture2D>("Characters\\player_spritesheetHighlighted"), 3, 4);
 
             // Bombs
             //bombs.Add(new Bomb (Content.Load<Texture2D>("Objects\\plate"), new Point(4, 1)));
 
+            // Crates
+            crates.Add(new Crate(Content.Load<Texture2D>("Objects\\crate_01"), new Point(4, 1)));
+
 
             // Setting up Tile Textures
-            tiles.Add(Content.Load<Texture2D>("Tiles\\void"));  // 0
-            tiles.Add(Content.Load<Texture2D>("Tiles\\floor")); // 1
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wall"));  // 2
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wallL")); // 3
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wallR")); // 4
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wallTL"));// 5
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wallTR"));// 6
+            tiles.Add(Content.Load<Texture2D>("Tiles\\occupiedCell"));  // 0
+            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01")); // 1
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_03"));  // 2
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04")); // 3
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04")); // 4
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));// 5
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));// 6
 
             tiles.Add(Content.Load<Texture2D>("Tiles\\void"));  // 7
 
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wall"));  // 8
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_01"));  // 8
+
+            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 9
 
 
             // Tile Layout
@@ -179,6 +188,14 @@ namespace BomberManClone
                 powerUps[i].UpdateMe(gt);
             }
 
+            // Crates
+            for (int i = 0; i < crates.Count; i++)
+            {
+                crates[i].UpdateMe(currentMap);
+                if (crates[i].State == CrateState.Dead)
+                    crates.RemoveAt(i);
+            }
+
             #endregion
 
             // close game
@@ -191,10 +208,10 @@ namespace BomberManClone
 
         protected override void Draw(GameTime gt)
         {
-            GraphicsDevice.Clear(Color.Black);
 
             // Applying scale effect to the screen
             GraphicsDevice.SetRenderTarget(_renderTarget);
+            GraphicsDevice.Clear(Color.Tan);
 
             _spriteBatch.Begin();
             // Map
@@ -213,6 +230,13 @@ namespace BomberManClone
             {
                 powerUps[i].DrawMe(_spriteBatch);
             }
+
+            // Crates
+            foreach (var crate in crates)
+            {
+                crate.DrawMe(_spriteBatch);
+            }
+
 #if DEBUG
             _spriteBatch.DrawString(debugFont, _graphics.PreferredBackBufferWidth + "x " + _graphics.PreferredBackBufferHeight
                 + "\nfps: " + (int)(1 / gt.ElapsedGameTime.TotalSeconds) + "ish" +
@@ -224,7 +248,7 @@ namespace BomberManClone
             // Completing Scale effect on the screen
             GraphicsDevice.SetRenderTarget(null);
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            _spriteBatch.Draw(_renderTarget, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, 1);
+            _spriteBatch.Draw(_renderTarget, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 1);
             _spriteBatch.End();
             #endregion
 

@@ -16,7 +16,7 @@ namespace BomberManClone
         }
         public virtual void DrawMe(SpriteBatch sb)
         {
-            sb.Draw(m_txr, new Vector2(m_position.X * 16, m_position.Y * 16), Color.White);
+            sb.Draw(m_txr, new Vector2(m_position.X * 64, m_position.Y * 64), Color.White);
         }
     }
 }

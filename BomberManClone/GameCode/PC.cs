@@ -23,7 +23,7 @@ namespace BomberManClone
         public PC(Point startPos, Texture2D txr, int frameCount, int fps)
             :base(startPos, txr, frameCount, fps)
         {
-            m_movementSpeed = .06f;
+            m_movementSpeed = .04f;
             m_hasMoved = false;
             m_numberOfBombs = 2;
             m_ghostMovementSpeed = .5f;
@@ -197,7 +197,7 @@ namespace BomberManClone
 
            // check if the player can respawn
             if (kb_curr.IsKeyDown(Keys.F) && kb_old.IsKeyUp(Keys.F))
-                if (m_shields >= 0 && currentMap.IsWalkableForPlayer(m_position.ToPoint()))
+                if (m_shields >= 0 && currentMap.IsCellSafe(m_position.ToPoint()))
                     Respawn();
   
         }
