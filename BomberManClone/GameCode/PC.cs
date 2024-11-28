@@ -18,6 +18,7 @@ namespace BomberManClone
         private int m_numberOfBombs;
         private int m_shields;
         private int m_explosionRadius;
+        private Point m_startPosition;
         public int ExplosionRadius { get { return m_explosionRadius; } }
         public int Shields { get {return m_shields; } }
         public Vector2 Position { get { return m_position; } }
@@ -25,6 +26,7 @@ namespace BomberManClone
         public PC(Point startPos, Texture2D txr, int frameCount, int fps)
             :base(startPos, txr, frameCount, fps)
         {
+            m_startPosition = startPos;
             m_movementSpeed = .04f;
             m_hasMoved = false;
             m_numberOfBombs = 2;
@@ -229,10 +231,7 @@ namespace BomberManClone
         /// </summary>
         public void IncreaseBombCount()
         {
-            if (m_numberOfBombs < 2)
-            {
-                m_numberOfBombs++;
-            }
+             m_numberOfBombs++;
         }
         public void SpeedPowerUp()
         {
@@ -245,6 +244,18 @@ namespace BomberManClone
         public void ExplosionRadiusPowerUp()
         {
             m_explosionRadius = 4;
+        }
+        public void Reset()
+        {
+            m_movementSpeed = .04f;
+            m_hasMoved = false;
+            m_numberOfBombs = 2;
+            m_ghostMovementSpeed = .5f;
+            m_shields = 3;
+            m_currentState = PlayerState.InPlay;
+            m_explosionRadius = 3;
+            m_targetLocation = m_startPosition.ToVector2();
+            m_position = m_startPosition.ToVector2 ();
         }
         public override void DrawMe(SpriteBatch sb, GameTime gt, int tileWidth, int tileHeight, Color color)
         {

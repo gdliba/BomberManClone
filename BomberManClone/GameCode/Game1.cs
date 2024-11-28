@@ -93,7 +93,7 @@ namespace BomberManClone
             powerUps.Add(new PowerUp(explosionRadiusPUText, new Point(4, 5), PowerUpType.Speed));
 
             // Crates
-            crates.Add(new Crate(Content.Load<Texture2D>("Objects\\crate_01"), new Point(4, 1)));
+            // crates.Add(new Crate(Content.Load<Texture2D>("Objects\\crate_01"), new Point(4, 1)));
 
 
             // Setting up Tile Textures
@@ -109,6 +109,8 @@ namespace BomberManClone
             tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));  // 8
             tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 9
             tiles.Add(Content.Load<Texture2D>("Tiles\\occupiedCell"));  // 10
+            tiles.Add(Content.Load<Texture2D>("Tiles\\empty"));  // 11
+
 
 
 
@@ -195,6 +197,10 @@ namespace BomberManClone
         {
             kb_curr = Keyboard.GetState();
 
+
+           
+
+
             #region Update States
             // Player
             var canPlaceBomb = player1.UpdateMe(gt, currentMap, kb_curr, kb_old);
@@ -235,7 +241,7 @@ namespace BomberManClone
                         {
                             case PowerUpType.Speed:
                                 player1.SpeedPowerUp();
-                            break;
+                                break;
                             case PowerUpType.MoreBombs:
                                 player1.MoreBombsPowerUp();
                                 break;
@@ -243,6 +249,7 @@ namespace BomberManClone
                                 player1.ExplosionRadiusPowerUp();
                                 break;
                         }
+                        powerUps.RemoveAt(i);
                     }    
                     
                 }
@@ -255,7 +262,7 @@ namespace BomberManClone
             {
                 crates[i].UpdateMe(currentMap);
                 var spawnPowerUp = crates[i].UpdateMe(currentMap);
-                    if (spawnPowerUp != null)
+                    if (spawnPowerUp > 6)
                         SpawnPowerUp(crates[i].Position, gt);
                 if (crates[i].State == CrateState.Dead)
                 {
@@ -269,7 +276,10 @@ namespace BomberManClone
             if (kb_curr.IsKeyDown(Keys.Escape))
                 this.Exit();
 
-            base.Update(gt);
+            if (kb_curr.IsKeyDown(Keys.Up))
+                player1.Reset();
+
+                base.Update(gt);
             kb_old = kb_curr;
         }
 
