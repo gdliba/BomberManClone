@@ -17,6 +17,8 @@ namespace BomberManClone
         private bool m_hasMoved;
         private int m_numberOfBombs;
         private int m_shields;
+        private int m_explosionRadius;
+        public int ExplosionRadius { get { return m_explosionRadius; } }
         public int Shields { get {return m_shields; } }
         public Vector2 Position { get { return m_position; } }
         private PlayerState m_currentState;
@@ -29,6 +31,7 @@ namespace BomberManClone
             m_ghostMovementSpeed = .5f;
             m_shields = 3;
             m_currentState = PlayerState.InPlay;
+            m_explosionRadius = 3;
         }
         public bool UpdateMe(GameTime gameTime, Map currentMap,
             KeyboardState kb_curr, KeyboardState kb_old)
@@ -51,6 +54,10 @@ namespace BomberManClone
 
             if (currentMap.IsCellExploding(m_position.ToPoint()))
                 TakeAHit(currentMap);
+            
+            // React to Powerups
+            //if (currentMap.IsPowerUpOnCell(m_position.ToPoint()))
+
 
             // Declare that you are occupying the cell so that other players cannot walk into you
             currentMap.PlayerIsOccupyingCell(m_position.ToPoint());
@@ -226,6 +233,18 @@ namespace BomberManClone
             {
                 m_numberOfBombs++;
             }
+        }
+        public void SpeedPowerUp()
+        {
+            m_movementSpeed = 1;
+        }
+        public void MoreBombsPowerUp()
+        {
+            m_numberOfBombs = 3;
+        }
+        public void ExplosionRadiusPowerUp()
+        {
+            m_explosionRadius = 4;
         }
         public override void DrawMe(SpriteBatch sb, GameTime gt, int tileWidth, int tileHeight, Color color)
         {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace BomberManClone
 {
@@ -18,8 +19,11 @@ namespace BomberManClone
     class PowerUp : StaticGraphic
     {
         private PowerUpType m_type;
+        public PowerUpType Type {  get { return m_type; } }
         private PowerUpState m_state;
         public PowerUpState State {  get { return m_state; } }
+
+        public Point Position { get { return m_position; } }
 
         private float m_powerUpDuration;
 

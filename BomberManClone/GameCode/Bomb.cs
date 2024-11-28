@@ -16,7 +16,7 @@ namespace BomberManClone
     {
         private float m_fuseCounter;
         private float m_fuseTrigger;
-        private int m_explosionRange;
+        private int m_explosionRadius;
 
         private BombStates m_state;
         public BombStates State { get { return m_state; } }
@@ -24,7 +24,7 @@ namespace BomberManClone
         public event Action OnExplode; // Event that will notify when the bomb explodes
 
 
-        public Bomb(Texture2D txr, Point placedPosition)
+        public Bomb(Texture2D txr, Point placedPosition, int explosionRadius)
             : base (txr, placedPosition)
         {
             m_txr = txr;
@@ -34,7 +34,7 @@ namespace BomberManClone
             m_fuseCounter = 3;
             m_fuseTrigger = 0;
 
-            m_explosionRange = 3;
+            m_explosionRadius = explosionRadius;
         }
         public void UpdateMe(GameTime gt,Map currentMap)
         {
@@ -63,7 +63,7 @@ namespace BomberManClone
         }
         public void Explode(Map currentMap, GameTime gt)
         {
-            currentMap.RegularBombExplosion(m_position,gt,m_explosionRange);
+            currentMap.RegularBombExplosion(m_position,gt,m_explosionRadius);
             m_state = BombStates.Dead;
 
             // Notify that the bomb exploded and increment the player's bomb count

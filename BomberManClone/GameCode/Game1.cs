@@ -135,7 +135,7 @@ namespace BomberManClone
 
             };
             testfloor2 = new int[15, 15]
-           {
+            {
                 { 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 6},
                 { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
                 { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
@@ -152,15 +152,15 @@ namespace BomberManClone
                 { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 4},
                 { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}
 
-           };
+            };
 
             // Use this Map
             currentMap = new Map(testfloor2);
             currentMap.SpawnCrates(Content.Load<Texture2D>("Objects\\crate_01"), crates);
         }
-        public bool PlaceBomb(Point pos, GameTime gt)
+        public bool PlaceBomb(Point pos, GameTime gt, int explosionRadius)
         {
-            Bomb newBomb = new Bomb(Content.Load<Texture2D>("Objects\\plate"), pos);
+            Bomb newBomb = new Bomb(Content.Load<Texture2D>("Objects\\plate"), pos, explosionRadius);
             bombs.Add(newBomb);
 
             // Subscribe to the OnExplode event
@@ -187,7 +187,7 @@ namespace BomberManClone
                 randomPUText = extraBombPUText;
             else if (randomPowerup == 2)
                 randomPUText = explosionRadiusPUText;
-            PowerUp newPowerUp = new PowerUp(randomPUText, pos, PowerUpType.Speed);
+            PowerUp newPowerUp = new PowerUp(randomPUText, pos, (PowerUpType) randomPowerup);
             powerUps.Add(newPowerUp);
         }
 
@@ -200,9 +200,8 @@ namespace BomberManClone
             var canPlaceBomb = player1.UpdateMe(gt, currentMap, kb_curr, kb_old);
             if (canPlaceBomb)
             {
-                PlaceBomb(player1.Position.ToPoint(), gt);
+                PlaceBomb(player1.Position.ToPoint(), gt, player1.ExplosionRadius);
             }
-
             // Bombs
             for (int i = 0; i < bombs.Count; i++)
             {
@@ -220,7 +219,36 @@ namespace BomberManClone
                 powerUps[i].UpdateMe(gt, currentMap);
                 if (powerUps[i].State==PowerUpState.Dead)
                     powerUps.RemoveAt(i);
+
+
             }
+
+            //////////////////// Player - PowerUps Interraction //////////////////// 
+
+            if (currentMap.IsPowerUpOnCell(player1.Position.ToPoint()))
+            {
+                for (int i = 0; i < powerUps.Count; i++)
+                {
+                    if (powerUps[i].Position == player1.Position.ToPoint())
+                    {
+                        switch (powerUps[i].Type)
+                        {
+                            case PowerUpType.Speed:
+                                player1.SpeedPowerUp();
+                            break;
+                            case PowerUpType.MoreBombs:
+                                player1.MoreBombsPowerUp();
+                                break;
+                                case PowerUpType.ExplosionRadius:
+                                player1.ExplosionRadiusPowerUp();
+                                break;
+                        }
+                    }    
+                    
+                }
+            }
+
+
 
             // Crates
             for (int i = 0; i < crates.Count; i++)

@@ -69,6 +69,13 @@ namespace BomberManClone
             m_Cells[idx.X, idx.Y].Type = 10;
             m_Cells[idx.X, idx.Y].Duration = m_powerUpCellDuration;
         }
+        public bool IsPowerUpOnCell(Point idx)
+        {
+            if (m_Cells[idx.X, idx.Y].Type == 10) 
+                return true;
+            else 
+                return false;
+        }
         public bool IsWalkableForPlayer(Point idx)
         {
             switch (m_Cells[idx.X, idx.Y].Type)
