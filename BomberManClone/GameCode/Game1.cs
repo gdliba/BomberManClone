@@ -90,7 +90,7 @@ namespace BomberManClone
             speedPUText = Content.Load<Texture2D>("Objects\\powerup_01");
             extraBombPUText = Content.Load<Texture2D>("Objects\\powerup_02");
             explosionRadiusPUText = Content.Load<Texture2D>("Objects\\powerup_03");
-            powerUps.Add(new PowerUp(explosionRadiusPUText, new Point(4, 5), PowerUpType.Speed));
+            // powerUps.Add(new PowerUp(explosionRadiusPUText, new Point(4, 5), PowerUpType.Speed));
 
             // Crates
             // crates.Add(new Crate(Content.Load<Texture2D>("Objects\\crate_01"), new Point(4, 1)));
