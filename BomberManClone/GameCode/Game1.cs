@@ -183,12 +183,18 @@ namespace BomberManClone
         public void SpawnPowerUp(Point pos, GameTime gt)
         {
             var randomPowerup = RNG.Next(0, 3);
-            if (randomPowerup == 0)
-                randomPUText = speedPUText;
-            else if (randomPowerup == 1)
-                randomPUText = extraBombPUText;
-            else if (randomPowerup == 2)
-                randomPUText = explosionRadiusPUText;
+            switch (randomPowerup)
+            {
+                case 0:
+                    randomPUText = speedPUText;
+                    break;
+                case 1:
+                    randomPUText = extraBombPUText;
+                    break;
+                case 2:
+                    randomPUText = explosionRadiusPUText;
+                    break;
+            }
             PowerUp newPowerUp = new PowerUp(randomPUText, pos, (PowerUpType) randomPowerup);
             powerUps.Add(newPowerUp);
         }
