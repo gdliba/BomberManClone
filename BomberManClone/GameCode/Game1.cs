@@ -275,7 +275,7 @@ namespace BomberManClone
             // close game
             if (kb_curr.IsKeyDown(Keys.Escape))
                 this.Exit();
-
+            // Test for player reset method //////////////////////////
             if (kb_curr.IsKeyDown(Keys.Up))
                 player1.Reset();
 
