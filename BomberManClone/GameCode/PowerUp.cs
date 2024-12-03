@@ -56,6 +56,8 @@ namespace BomberManClone
             m_powerUpDuration -= (float)gt.ElapsedGameTime.TotalSeconds;
             if (m_powerUpDuration < 0)
                 m_state = PowerUpState.Dead;
+            if (currentMap.IsCellExploding(m_position))
+                m_state = PowerUpState.Dead;
         }
         public override void DrawMe(SpriteBatch sb)
         {

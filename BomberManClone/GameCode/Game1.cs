@@ -6,6 +6,12 @@ using System.Collections.Generic;
 
 namespace BomberManClone
 {
+    enum GameState
+    {
+        Start,
+        InPlay,
+        GameOver
+    }
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
@@ -23,11 +29,15 @@ namespace BomberManClone
 
         // Tiles/Map
         List<Texture2D> tiles;
-        int[,] testfloor, testfloor2;
+        int[,] testfloor, testfloor2, finishedLevel;
         Map currentMap;
 
         //Keyboard
         KeyboardState kb_curr, kb_old;
+
+        // Mouse
+        Point mousepos;
+        MouseState currMouse, oldMouse;
 
         //Players
         PC player1;
@@ -42,6 +52,13 @@ namespace BomberManClone
         // Crates
         List<Crate> crates;
         List<Point> crateSpawnPoints;
+
+        //GameState
+        GameState currentGameState;
+
+        //Buttons
+        List<Button> buttons;
+        Texture2D buttonTxr, buttonTxrPressed;
 
         #endregion
 
@@ -67,11 +84,13 @@ namespace BomberManClone
             powerUps = new List<PowerUp>();
             crates = new List<Crate>();
             crateSpawnPoints = new List<Point>();
+            buttons = new List<Button>();
 
 
 #if DEBUG
             debugFont = Content.Load<SpriteFont>("Fonts\\Arial07");
 #endif
+            currentGameState = GameState.InPlay;
             base.Initialize();
         }
 
@@ -81,7 +100,7 @@ namespace BomberManClone
             _renderTarget = new RenderTarget2D(_spriteBatch.GraphicsDevice, 1088, 1088);
 
             // Players
-            player1 = new PC(new Point(1, 1), Content.Load<Texture2D>("Characters\\player_spritesheetHighlighted"), 3, 4);
+            player1 = new PC(new Point(2, 1), Content.Load<Texture2D>("Characters\\player_spritesheetHighlighted"), 3, 4);
 
             // Bombs
             //bombs.Add(new Bomb (Content.Load<Texture2D>("Objects\\plate"), new Point(4, 1)));
@@ -94,6 +113,11 @@ namespace BomberManClone
 
             // Crates
             // crates.Add(new Crate(Content.Load<Texture2D>("Objects\\crate_01"), new Point(4, 1)));
+
+            //Buttons
+            buttonTxr = Content.Load<Texture2D>("UI\\button");
+            buttonTxrPressed = Content.Load<Texture2D>("UI\\button_pressed");
+            buttons.Add(new Button(buttonTxr, buttonTxrPressed, new Point(100,100)));
 
 
             // Setting up Tile Textures
@@ -110,6 +134,7 @@ namespace BomberManClone
             tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 9
             tiles.Add(Content.Load<Texture2D>("Tiles\\occupiedCell"));  // 10
             tiles.Add(Content.Load<Texture2D>("Tiles\\empty"));  // 11
+            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01")); // 12
 
 
 
@@ -136,6 +161,27 @@ namespace BomberManClone
                 { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}
 
             };
+            finishedLevel = new int[17, 17]
+            {
+                {11, 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 6, 11},
+                {11, 3, 12, 12, 1, 1, 1, 1, 1, 1, 1, 1, 1, 12, 12, 4, 11},
+                {11, 3, 12, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 12, 4, 11},
+                {11, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 11},
+                {11, 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4, 11},
+                {11, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 11},
+                {11, 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4, 11},
+                {11, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 11},
+                {11, 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4, 11},
+                {11, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 11},
+                {11, 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4, 11},
+                {11, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 11},
+                {11, 3, 12, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 12, 4, 11},
+                {11, 3, 12, 12, 1, 1, 1, 1, 1, 1, 1, 1, 1, 12, 12, 4, 11},
+                {11, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 11},
+                {11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11},
+                {11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11}
+                
+            };
             testfloor2 = new int[15, 15]
             {
                 { 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 6},
@@ -157,7 +203,7 @@ namespace BomberManClone
             };
 
             // Use this Map
-            currentMap = new Map(testfloor2);
+            currentMap = new Map(finishedLevel);
             currentMap.SpawnCrates(Content.Load<Texture2D>("Objects\\crate_01"), crates);
         }
         public bool PlaceBomb(Point pos, GameTime gt, int explosionRadius)
@@ -182,7 +228,7 @@ namespace BomberManClone
         }
         public void SpawnPowerUp(Point pos, GameTime gt)
         {
-            var randomPowerup = RNG.Next(0, 3);
+            var randomPowerup = RNG.Next(0, 1);
             switch (randomPowerup)
             {
                 case 0:
@@ -202,11 +248,77 @@ namespace BomberManClone
         protected override void Update(GameTime gt)
         {
             kb_curr = Keyboard.GetState();
+            //Track Mouse Position
+            mousepos = Mouse.GetState().Position;
+            currMouse = Mouse.GetState();
+
+            switch (currentGameState)
+            {
+                case GameState.Start:
+                    StartUpdate();
+                    break;
+                case GameState.InPlay:
+                    InPlayUpdate(gt);
+                    break;
+                case GameState.GameOver:
+                    GameOverUpdate();
+                    break;
+            }
+
+            // close game
+            if (kb_curr.IsKeyDown(Keys.Escape))
+                this.Exit();
+            // Test for player reset method //////////////////////////
+            if (kb_curr.IsKeyDown(Keys.Up))
+                player1.Reset();
+
+                base.Update(gt);
+            kb_old = kb_curr;
+            oldMouse = currMouse;
+        }
 
 
-           
+        protected override void Draw(GameTime gt)
+        {
+            // Applying scale effect to the screen
+            GraphicsDevice.SetRenderTarget(_renderTarget);
 
 
+            GraphicsDevice.Clear(Color.Tan);
+
+            _spriteBatch.Begin();
+
+            switch (currentGameState)
+            {
+                case GameState.Start:
+                    StartDraw(gt);
+                    break;
+                case GameState.InPlay:
+                    InPlayDraw(gt);
+                    break;
+                case GameState.GameOver:
+                    GameOverDraw(gt);
+                    break;
+            }
+
+            _spriteBatch.End();
+            #region Screen Scaling
+            // Completing Scale effect on the screen
+            GraphicsDevice.SetRenderTarget(null);
+            _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            _spriteBatch.Draw(_renderTarget, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 1);
+            _spriteBatch.End();
+            #endregion
+            base.Draw(gt);
+        }
+        #region STATE UPDATES
+        void StartUpdate()
+        {
+
+
+        }
+        void InPlayUpdate(GameTime gt)
+        {
             #region Update States
             // Player
             var canPlaceBomb = player1.UpdateMe(gt, currentMap, kb_curr, kb_old);
@@ -217,8 +329,8 @@ namespace BomberManClone
             // Bombs
             for (int i = 0; i < bombs.Count; i++)
             {
-                bombs[i].UpdateMe(gt,currentMap);
-                if (bombs[i].State==BombStates.Dead)
+                bombs[i].UpdateMe(gt, currentMap);
+                if (bombs[i].State == BombStates.Dead)
                     bombs.RemoveAt(i);
             }
 
@@ -229,7 +341,7 @@ namespace BomberManClone
             for (int i = 0; i < powerUps.Count; i++)
             {
                 powerUps[i].UpdateMe(gt, currentMap);
-                if (powerUps[i].State==PowerUpState.Dead)
+                if (powerUps[i].State == PowerUpState.Dead)
                     powerUps.RemoveAt(i);
 
 
@@ -251,13 +363,13 @@ namespace BomberManClone
                             case PowerUpType.MoreBombs:
                                 player1.MoreBombsPowerUp();
                                 break;
-                                case PowerUpType.ExplosionRadius:
+                            case PowerUpType.ExplosionRadius:
                                 player1.ExplosionRadiusPowerUp();
                                 break;
                         }
                         powerUps.RemoveAt(i);
-                    }    
-                    
+                    }
+
                 }
             }
 
@@ -268,35 +380,31 @@ namespace BomberManClone
             {
                 crates[i].UpdateMe(currentMap);
                 var spawnPowerUp = crates[i].UpdateMe(currentMap);
-                    if (spawnPowerUp > 6)
-                        SpawnPowerUp(crates[i].Position, gt);
-                if (crates[i].State == CrateState.Dead)
+                if (spawnPowerUp == CrateState.SpawnPickup)
+                    SpawnPowerUp(crates[i].Position, gt);
+                if (crates[i].State == CrateState.Dead || crates[i].State == CrateState.SpawnPickup)
                 {
                     crates.RemoveAt(i);
                 }
             }
 
             #endregion
-
-            // close game
-            if (kb_curr.IsKeyDown(Keys.Escape))
-                this.Exit();
-            // Test for player reset method //////////////////////////
-            if (kb_curr.IsKeyDown(Keys.Up))
-                player1.Reset();
-
-                base.Update(gt);
-            kb_old = kb_curr;
         }
-
-        protected override void Draw(GameTime gt)
+        void GameOverUpdate()
         {
 
-            // Applying scale effect to the screen
-            GraphicsDevice.SetRenderTarget(_renderTarget);
-            GraphicsDevice.Clear(Color.Tan);
-
-            _spriteBatch.Begin();
+        }
+        #endregion
+        #region STATE DRAWS
+        void StartDraw(GameTime gt)
+        {
+            foreach (var button in buttons)
+            {
+                button.DrawMe(_spriteBatch, mousepos,currMouse,oldMouse, "Hello World", debugFont);
+            }
+        }
+        void InPlayDraw(GameTime gt)
+        {
             // Map
             currentMap.DrawMe(_spriteBatch, tiles);
             // Player
@@ -326,17 +434,12 @@ namespace BomberManClone
                 "\nplayer1 Shields: " + player1.Shields,
                 new Vector2(10, 10), Color.Black);
 #endif
-            _spriteBatch.End();
-            #region Screen Scaling
-            // Completing Scale effect on the screen
-            GraphicsDevice.SetRenderTarget(null);
-            _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            _spriteBatch.Draw(_renderTarget, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 1);
-            _spriteBatch.End();
-            #endregion
-
-
-            base.Draw(gt);
+           
         }
+        void GameOverDraw(GameTime gt)
+        {
+
+        }
+        #endregion
     }
 }

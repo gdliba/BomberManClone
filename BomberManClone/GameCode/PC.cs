@@ -235,7 +235,7 @@ namespace BomberManClone
         }
         public void SpeedPowerUp()
         {
-            m_movementSpeed = 1;
+            m_movementSpeed = .08f;
         }
         public void MoreBombsPowerUp()
         {

@@ -83,6 +83,7 @@ namespace BomberManClone
                 case 1:
                 case 7:
                 case 10:
+                case 12:
                     return true;
                 default:
                     return false;
