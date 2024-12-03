@@ -220,7 +220,7 @@ namespace BomberManClone
             m_shields--;
             m_position = m_targetLocation;
             m_hasMoved = false;
-            if (m_shields >= 0)
+            if (m_shields >= 1)
                 m_currentState = PlayerState.Ghost;
             else
                 m_currentState = PlayerState.Dead;

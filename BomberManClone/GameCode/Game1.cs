@@ -56,9 +56,14 @@ namespace BomberManClone
         //GameState
         GameState currentGameState;
 
-        //Buttons
+        // Buttons
         List<Button> buttons;
         Texture2D buttonTxr, buttonTxrPressed;
+
+        // Health UI
+        Texture2D healthTxr, healthTxrEmpty;
+        List<HealthUI> healthDisplay;
+        Point player1HealthDisplay, player2HealthDisplay, player3HealthDisplay, player4HealthDisplay;
 
         #endregion
 
@@ -85,12 +90,18 @@ namespace BomberManClone
             crates = new List<Crate>();
             crateSpawnPoints = new List<Point>();
             buttons = new List<Button>();
+            healthDisplay = new List<HealthUI>();
 
+            // Setting points
+            player1HealthDisplay = new Point(0, 0); // top left
+            player2HealthDisplay = new Point(_graphics.PreferredBackBufferWidth-64, 12*64); // bottom right
+            player3HealthDisplay = new Point(_graphics.PreferredBackBufferWidth-64, 0); // top right
+            player4HealthDisplay = new Point(0, 12*64);
 
 #if DEBUG
             debugFont = Content.Load<SpriteFont>("Fonts\\Arial07");
 #endif
-            currentGameState = GameState.InPlay;
+            currentGameState = GameState.Start;
             base.Initialize();
         }
 
@@ -117,7 +128,17 @@ namespace BomberManClone
             //Buttons
             buttonTxr = Content.Load<Texture2D>("UI\\button");
             buttonTxrPressed = Content.Load<Texture2D>("UI\\button_pressed");
-            buttons.Add(new Button(buttonTxr, buttonTxrPressed, new Point(100,100)));
+            buttons.Add(new Button(buttonTxr, buttonTxrPressed, new Point(100, 100)));
+            buttons.Add(new Button(buttonTxr, buttonTxrPressed, new Point(100, 200)));
+
+            // Health UI
+            healthTxr = Content.Load<Texture2D>("UI\\playerFace");
+            healthTxrEmpty = Content.Load<Texture2D>("UI\\playerFace_empty");
+            healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, player1HealthDisplay));   // player 1
+            healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, player2HealthDisplay));   // player 2
+            healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, player3HealthDisplay));   // player 3 
+            healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, player4HealthDisplay));   // player 4 
+
 
 
             // Setting up Tile Textures
@@ -228,7 +249,7 @@ namespace BomberManClone
         }
         public void SpawnPowerUp(Point pos, GameTime gt)
         {
-            var randomPowerup = RNG.Next(0, 1);
+            var randomPowerup = RNG.Next(0, 3);
             switch (randomPowerup)
             {
                 case 0:
@@ -243,6 +264,10 @@ namespace BomberManClone
             }
             PowerUp newPowerUp = new PowerUp(randomPUText, pos, (PowerUpType) randomPowerup);
             powerUps.Add(newPowerUp);
+        }
+        public void ChangeState(GameState state)
+        {
+            currentGameState = state;
         }
 
         protected override void Update(GameTime gt)
@@ -314,7 +339,12 @@ namespace BomberManClone
         #region STATE UPDATES
         void StartUpdate()
         {
-
+            for (int i = 0; i < buttons.Count; i++)
+            {
+                buttons[0].UpdateMe(mousepos, currMouse, oldMouse);
+                buttons[0].OnClick += ChangeState(GameState.InPlay);
+                buttons[1].UpdateMe(mousepos, currMouse, oldMouse);
+            }
 
         }
         void InPlayUpdate(GameTime gt)
@@ -387,7 +417,6 @@ namespace BomberManClone
                     crates.RemoveAt(i);
                 }
             }
-
             #endregion
         }
         void GameOverUpdate()
@@ -398,9 +427,10 @@ namespace BomberManClone
         #region STATE DRAWS
         void StartDraw(GameTime gt)
         {
-            foreach (var button in buttons)
+            for (int i = 0; i < buttons.Count; i++)
             {
-                button.DrawMe(_spriteBatch, mousepos,currMouse,oldMouse, "Hello World", debugFont);
+                buttons[0].DrawMe(_spriteBatch, mousepos, currMouse, oldMouse, "Start", debugFont);
+                buttons[1].DrawMe(_spriteBatch, mousepos, currMouse, oldMouse, "Exit", debugFont);
             }
         }
         void InPlayDraw(GameTime gt)
@@ -426,6 +456,12 @@ namespace BomberManClone
             foreach (var crate in crates)
             {
                 crate.DrawMe(_spriteBatch);
+            }
+
+            // Health UI
+            foreach (var health in healthDisplay)
+            {
+                health.DrawMe(_spriteBatch, player1.Shields);
             }
 
 #if DEBUG
