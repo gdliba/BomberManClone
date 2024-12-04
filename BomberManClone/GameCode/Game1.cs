@@ -30,6 +30,8 @@ namespace BomberManClone
 
         // Convenient
         int screenWidth, screenHeight;
+        Point screenCentre;
+
 
         // Tiles/Map
         List<Texture2D> tiles;
@@ -45,6 +47,7 @@ namespace BomberManClone
 
         //Players
         PC player1;
+        Texture2D toombstoneTxr;
 
         //Bomb
         List<Bomb> bombs;
@@ -63,6 +66,7 @@ namespace BomberManClone
         // Buttons
         List<Button> buttons;
         Texture2D buttonTxr, buttonTxrPressed;
+        Point startButtonPos, exitButtonPos;
 
         // Health UI
         Texture2D healthTxr, healthTxrEmpty;
@@ -70,7 +74,7 @@ namespace BomberManClone
         Point player1HealthDisplay, player2HealthDisplay, player3HealthDisplay, player4HealthDisplay;
 
         // Sounds
-        SoundEffect buttonHoverSfx, buttonPressedSfx, maximiseSfx, minimiseSfx;
+        SoundEffect buttonHoverSfx, buttonPressedSfx, maximiseSfx, minimiseSfx, footstepSfx, PUspawnSfx, deathSfx;
         SoundEffectInstance buttonHoverInstance, buttonPressedInstance, maximiseInstance, minimiseInstance;
 
         #endregion
@@ -90,6 +94,7 @@ namespace BomberManClone
 
             screenWidth = _graphics.PreferredBackBufferWidth;
             screenHeight = _graphics.PreferredBackBufferHeight;
+            screenCentre = new Point(screenWidth/2, screenHeight/2);
         }
 
         protected override void Initialize()
@@ -109,6 +114,10 @@ namespace BomberManClone
             player3HealthDisplay = new Point(_graphics.PreferredBackBufferWidth-64, 0); // top right
             player4HealthDisplay = new Point(0, 12*64);
 
+            // Button Positions
+            startButtonPos = new Point(screenCentre.X - 80, screenCentre.Y - 22);
+            exitButtonPos = new Point(startButtonPos.X, screenCentre.Y + 45);
+
 #if DEBUG
             debugFont = Content.Load<SpriteFont>("Fonts\\Arial07");
 #endif
@@ -121,8 +130,6 @@ namespace BomberManClone
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _renderTarget = new RenderTarget2D(_spriteBatch.GraphicsDevice, 1088, 1088);
 
-            // Players
-            player1 = new PC(new Point(2, 1), Content.Load<Texture2D>("Characters\\player_spritesheetHighlighted"), 3, 4);
 
             // Bombs
             //bombs.Add(new Bomb (Content.Load<Texture2D>("Objects\\plate"), new Point(4, 1)));
@@ -150,18 +157,27 @@ namespace BomberManClone
             buttonPressedSfx = Content.Load<SoundEffect>("Sounds\\UI2");
             maximiseSfx = Content.Load<SoundEffect>("Sounds\\maximise");
             minimiseSfx = Content.Load<SoundEffect>("Sounds\\minimise");
+            footstepSfx = Content.Load<SoundEffect>("Sounds\\footstep");
+            PUspawnSfx = Content.Load<SoundEffect>("Sounds\\PUSpawn");
+            deathSfx = Content.Load<SoundEffect>("Sounds\\death");
+
+
 
             buttonHoverInstance = buttonHoverSfx.CreateInstance();
             buttonPressedInstance = buttonPressedSfx.CreateInstance();
             maximiseInstance = maximiseSfx.CreateInstance();
             minimiseInstance = minimiseSfx.CreateInstance();
 
+            // Players
+            toombstoneTxr = Content.Load<Texture2D>("Objects\\toombstone");
+            player1 = new PC(new Point(2, 1), Content.Load<Texture2D>("Characters\\player_spritesheetHighlighted"), 3, 4, footstepSfx, toombstoneTxr, deathSfx);
 
             //Buttons
             buttonTxr = Content.Load<Texture2D>("UI\\button");
             buttonTxrPressed = Content.Load<Texture2D>("UI\\button_pressed");
-            buttons.Add(new Button(buttonTxr, buttonTxrPressed, new Point(100, 100), buttonHoverSfx, maximiseSfx));
-            buttons.Add(new Button(buttonTxr, buttonTxrPressed, new Point(100, 200), buttonHoverSfx, minimiseSfx));
+
+            buttons.Add(new Button(buttonTxr, buttonTxrPressed, startButtonPos, buttonHoverSfx, maximiseSfx));
+            buttons.Add(new Button(buttonTxr, buttonTxrPressed, exitButtonPos, buttonHoverSfx, minimiseSfx));
 
 
 
@@ -181,6 +197,8 @@ namespace BomberManClone
             tiles.Add(Content.Load<Texture2D>("Tiles\\occupiedCell"));  // 10
             tiles.Add(Content.Load<Texture2D>("Tiles\\empty"));  // 11
             tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01")); // 12
+            tiles.Add(Content.Load<Texture2D>("Tiles\\void"));  // 13
+
 
 
 
@@ -287,12 +305,13 @@ namespace BomberManClone
                     randomPUText = explosionRadiusPUText;
                     break;
             }
-            PowerUp newPowerUp = new PowerUp(randomPUText, pos, (PowerUpType) randomPowerup);
+            PowerUp newPowerUp = new PowerUp(randomPUText, pos, (PowerUpType) randomPowerup, PUspawnSfx);
             powerUps.Add(newPowerUp);
         }
         public void ChangeState(GameState state)
         {
             currentGameState = state;
+
         }
 
         protected override void Update(GameTime gt)
@@ -411,21 +430,26 @@ namespace BomberManClone
             {
                 for (int i = 0; i < powerUps.Count; i++)
                 {
-                    if (powerUps[i].Position == player1.Position.ToPoint())
+                    if (player1.State==PlayerState.InPlay)
                     {
-                        switch (powerUps[i].Type)
+
+                        if (powerUps[i].Position == player1.Position.ToPoint())
                         {
-                            case PowerUpType.Speed:
-                                player1.SpeedPowerUp();
-                                break;
-                            case PowerUpType.MoreBombs:
-                                player1.MoreBombsPowerUp();
-                                break;
-                            case PowerUpType.ExplosionRadius:
-                                player1.ExplosionRadiusPowerUp();
-                                break;
+                            maximiseSfx.Play();
+                            switch (powerUps[i].Type)
+                            {
+                                case PowerUpType.Speed:
+                                    player1.SpeedPowerUp();
+                                    break;
+                                case PowerUpType.MoreBombs:
+                                    player1.MoreBombsPowerUp();
+                                    break;
+                                case PowerUpType.ExplosionRadius:
+                                    player1.ExplosionRadiusPowerUp();
+                                    break;
+                            }
+                            powerUps.RemoveAt(i);
                         }
-                        powerUps.RemoveAt(i);
                     }
 
                 }
@@ -455,6 +479,10 @@ namespace BomberManClone
         #region STATE DRAWS
         void StartDraw(GameTime gt)
         {
+            // Map
+            currentMap.DrawMe(_spriteBatch, tiles);
+
+            // Buttons
             for (int i = 0; i < buttons.Count; i++)
             {
                 buttons[0].DrawMe(_spriteBatch, "Start", debugFont);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
@@ -26,8 +27,9 @@ namespace BomberManClone
         public Point Position { get { return m_position; } }
 
         private float m_powerUpDuration;
+        private SoundEffect m_spawnSfx;
 
-        public PowerUp(Texture2D txr, Point position, PowerUpType type)
+        public PowerUp(Texture2D txr, Point position, PowerUpType type, SoundEffect spawnSfx)
             : base(txr, position)
         {
             m_txr = txr;
@@ -35,13 +37,14 @@ namespace BomberManClone
             m_type = type;
             m_state = PowerUpState.Spawn;
             m_powerUpDuration = 10f;
+            m_spawnSfx = spawnSfx;
         }
         public void UpdateMe(GameTime gt, Map currentMap)
         {
             switch (m_state)
             {
                 case PowerUpState.Spawn:
-                    currentMap.PowerUpOnCell(m_position);
+                    PlacePowerUpOnCell(currentMap);
                     m_state = PowerUpState.InPlay;
                     break;
                 case PowerUpState.InPlay:
@@ -49,6 +52,15 @@ namespace BomberManClone
                     break;
                 case PowerUpState.Dead:
                     break;
+            }
+        }
+        public void PlacePowerUpOnCell(Map currentMap)
+        {
+            // If the cell you're about to spawn on is exploding, don't spawn
+            if (!currentMap.IsCellExploding(m_position))
+            {
+                currentMap.PowerUpOnCell(m_position);
+                m_spawnSfx.Play();
             }
         }
         public void InPlay(GameTime gt, Map currentMap)

@@ -94,6 +94,7 @@ namespace BomberManClone
             switch (m_Cells[idx.X, idx.Y].Type)
             {
                 case 1:
+                case 10:
                     return true;
                 default:
                     return false;
@@ -121,6 +122,12 @@ namespace BomberManClone
                 return true;
             return false;
         }
+        public bool IsCrateBreaking(Point idx)
+        {
+            if (m_Cells[idx.X, idx.Y].Type == 13 || m_Cells[idx.X, idx.Y].Type == 7)
+                return true;
+            return false;
+        }
         public void PlayerIsOccupyingCell(Point idx)
         {
             m_Cells[idx.X, idx.Y].Type = 0;
@@ -144,14 +151,10 @@ namespace BomberManClone
                     int newX = idx.X + dir.X * i;
                     int newY = idx.Y + dir.Y * i;
 
-                    // Check if out of bounds
-                    if (newX < 0 || newX >= m_Cells.GetLength(0) || newY < 0 || newY >= m_Cells.GetLength(1))
-                        break;
-
-                    // Check if hitting a Crate
+                    // Check if hitting a Crate or powerup
                     if (m_Cells[newX, newY].Type == 9)
                     {
-                        m_Cells[newX, newY].Type = 7;
+                        m_Cells[newX, newY].Type = 13;
                         m_Cells[newX, newY].Duration = m_explosionDuration + i * .1f;
                         break;
                     }
@@ -177,8 +180,7 @@ namespace BomberManClone
                 {
                     if (m_Cells[x, y].Type == 1)
                     {
-                        var roll = Game1.RNG.Next(0, 10);
-                        if (roll < 5)
+                        if (Game1.RNG.NextSingle() < Globals.CrateSpawnChance)
                         {
                             Crate newcrate = new Crate(txr, new Point(x, y));
                             crates.Add(newcrate);

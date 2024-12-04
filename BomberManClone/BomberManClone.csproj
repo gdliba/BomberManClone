@@ -11,6 +11,10 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Content\maximise.ogg" />
+    <None Remove="Content\minimise.ogg" />
+    <None Remove="Content\UI1.ogg" />
+    <None Remove="Content\UI2.ogg" />
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>

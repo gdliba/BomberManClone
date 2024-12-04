@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace BomberManClone
 {
@@ -14,16 +16,25 @@ namespace BomberManClone
     {
         private float m_movementSpeed;
         private float m_ghostMovementSpeed;
+        private float m_footstepTimer;
         private bool m_hasMoved;
         private int m_numberOfBombs;
         private int m_shields;
         private int m_explosionRadius;
         private Point m_startPosition;
+        private Texture2D m_deathTxr;
+
+        private bool m_isWalking;
+        private SoundEffect m_footstepSfx;
+        private SoundEffect m_deathSfx;
+
+
         public int ExplosionRadius { get { return m_explosionRadius; } }
         public int Shields { get {return m_shields; } }
         public Vector2 Position { get { return m_position; } }
         private PlayerState m_currentState;
-        public PC(Point startPos, Texture2D txr, int frameCount, int fps)
+        public PlayerState State { get { return m_currentState; } }
+        public PC(Point startPos, Texture2D txr, int frameCount, int fps, SoundEffect footstepSfx, Texture2D deathTxr, SoundEffect deathSfx)
             :base(startPos, txr, frameCount, fps)
         {
             m_startPosition = startPos;
@@ -31,9 +42,13 @@ namespace BomberManClone
             m_hasMoved = false;
             m_numberOfBombs = 2;
             m_ghostMovementSpeed = .5f;
-            m_shields = 3;
+            m_shields = 1;
             m_currentState = PlayerState.InPlay;
             m_explosionRadius = 3;
+            m_footstepSfx = footstepSfx;
+            m_footstepTimer = m_movementSpeed;
+            m_deathTxr = deathTxr;
+            m_deathSfx = deathSfx;
         }
         public bool UpdateMe(GameTime gameTime, Map currentMap,
             KeyboardState kb_curr, KeyboardState kb_old)
@@ -56,9 +71,15 @@ namespace BomberManClone
 
             if (currentMap.IsCellExploding(m_position.ToPoint()))
                 TakeAHit(currentMap);
-            
-            // React to Powerups
-            //if (currentMap.IsPowerUpOnCell(m_position.ToPoint()))
+
+             // Play the footstep sounds at a speed that makes sense
+            if (m_isWalking && m_footstepTimer <= 0)
+            {
+                PlayFootstep();
+                m_footstepTimer = (.008f/m_movementSpeed); // Reset timer based on speed
+            }
+            m_footstepTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+
 
 
             // Declare that you are occupying the cell so that other players cannot walk into you
@@ -112,8 +133,15 @@ namespace BomberManClone
                     }
                 }
             }
-            if(m_position != m_targetLocation)
+            if (m_position != m_targetLocation)
             {
+                // Player is now technically walking
+                // So trigger the Footstep method
+                m_isWalking = true;
+
+
+
+
                 m_hasMoved = true;
                 var direction = m_targetLocation - m_position;
                 direction.Normalize();
@@ -126,6 +154,8 @@ namespace BomberManClone
                     m_position = m_targetLocation;
                 }
             }
+            else
+                m_isWalking = false;
             #endregion
             if (kb_curr.IsKeyDown(Keys.F) && kb_old.IsKeyUp(Keys.F))
             {
@@ -140,6 +170,20 @@ namespace BomberManClone
             else
                 return false;
 
+        }
+        public void PlayFootstep()
+        {
+            SoundEffectInstance instance = m_footstepSfx.CreateInstance();
+            // Randomize pitch
+            instance.Pitch = (float)(Game1.RNG.NextDouble()*.5);
+
+            // Randomize volume
+            instance.Volume = (float)(0.3 + Game1.RNG.NextDouble() * 0.4);
+
+            // Randomize panning
+            instance.Pan = (float)(Game1.RNG.NextDouble() * 0.4 - 0.2);
+
+            instance.Play();
         }
         public void GhostState(GameTime gameTime, Map currentMap,
             KeyboardState kb_curr, KeyboardState kb_old)
@@ -223,7 +267,10 @@ namespace BomberManClone
             if (m_shields >= 1)
                 m_currentState = PlayerState.Ghost;
             else
+            {
+                m_deathSfx.Play();
                 m_currentState = PlayerState.Dead;
+            }
         }
         /// <summary>
         /// The use of this method is a convenient way of maintaining incapsulation
@@ -247,6 +294,7 @@ namespace BomberManClone
         }
         public void Reset()
         {
+            m_isWalking = false;
             m_movementSpeed = .04f;
             m_hasMoved = false;
             m_numberOfBombs = 2;
@@ -270,7 +318,7 @@ namespace BomberManClone
                     break;
                 case PlayerState.Dead:
                     // Draw this when player is dead
-                    base.DrawMe(sb, gt, tileWidth, tileHeight, Color.Red);
+                    sb.Draw(m_deathTxr, new Vector2(m_position.X*tileWidth, m_position.Y*tileHeight-4), Color.White);
                     break;
             }
         }

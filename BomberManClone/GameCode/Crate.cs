@@ -39,7 +39,7 @@ namespace BomberManClone
         }
         public void InPlay(Map currentMap)
         {
-            if (currentMap.IsCellExploding(m_position))
+            if (currentMap.IsCrateBreaking(m_position))
             {
                 if (Game1.RNG.NextSingle() < Globals.PickUpSpawnChance)
                     m_state = CrateState.SpawnPickup;
