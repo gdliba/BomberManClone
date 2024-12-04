@@ -197,8 +197,8 @@ namespace BomberManClone
                 {
                     sb.Draw(tiles[m_Cells[x, y].Type], new Vector2(x * tiles[0].Width, y * tiles[0].Height),
                         Color.White);
-                    sb.DrawString(Game1.debugFont,
-                        m_Cells[x, y].Type.ToString(), new Vector2(x * 64+32, y * 64+32), Color.Lavender);
+                    //sb.DrawString(Game1.debugFont,
+                    //    m_Cells[x, y].Type.ToString(), new Vector2(x * 64+32, y * 64+32), Color.Lavender);
                 }
         }
     }

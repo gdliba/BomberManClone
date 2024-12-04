@@ -42,7 +42,7 @@ namespace BomberManClone
             m_hasMoved = false;
             m_numberOfBombs = 2;
             m_ghostMovementSpeed = .5f;
-            m_shields = 1;
+            m_shields = 3;
             m_currentState = PlayerState.InPlay;
             m_explosionRadius = 3;
             m_footstepSfx = footstepSfx;

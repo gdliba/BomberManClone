@@ -183,7 +183,7 @@ namespace BomberManClone
 
 
             // Setting up Tile Textures
-            tiles.Add(Content.Load<Texture2D>("Tiles\\occupiedCell"));  // 0
+            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 0
             tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01")); // 1
             tiles.Add(Content.Load<Texture2D>("Tiles\\wall_03"));  // 2
             tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04")); // 3
