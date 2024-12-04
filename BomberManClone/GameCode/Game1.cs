@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -6,7 +7,7 @@ using System.Collections.Generic;
 
 namespace BomberManClone
 {
-    enum GameState
+    public enum GameState
     {
         Start,
         InPlay,
@@ -26,6 +27,9 @@ namespace BomberManClone
 #endif
 
         #region VARIABLES
+
+        // Convenient
+        int screenWidth, screenHeight;
 
         // Tiles/Map
         List<Texture2D> tiles;
@@ -65,6 +69,10 @@ namespace BomberManClone
         List<HealthUI> healthDisplay;
         Point player1HealthDisplay, player2HealthDisplay, player3HealthDisplay, player4HealthDisplay;
 
+        // Sounds
+        SoundEffect buttonHoverSfx, buttonPressedSfx, maximiseSfx, minimiseSfx;
+        SoundEffectInstance buttonHoverInstance, buttonPressedInstance, maximiseInstance, minimiseInstance;
+
         #endregion
 
 
@@ -79,6 +87,9 @@ namespace BomberManClone
             Window.Title = "Supermarket Reloaded";
             _graphics.PreferredBackBufferWidth = 1088;
             _graphics.PreferredBackBufferHeight = 1088;
+
+            screenWidth = _graphics.PreferredBackBufferWidth;
+            screenHeight = _graphics.PreferredBackBufferHeight;
         }
 
         protected override void Initialize()
@@ -125,11 +136,6 @@ namespace BomberManClone
             // Crates
             // crates.Add(new Crate(Content.Load<Texture2D>("Objects\\crate_01"), new Point(4, 1)));
 
-            //Buttons
-            buttonTxr = Content.Load<Texture2D>("UI\\button");
-            buttonTxrPressed = Content.Load<Texture2D>("UI\\button_pressed");
-            buttons.Add(new Button(buttonTxr, buttonTxrPressed, new Point(100, 100)));
-            buttons.Add(new Button(buttonTxr, buttonTxrPressed, new Point(100, 200)));
 
             // Health UI
             healthTxr = Content.Load<Texture2D>("UI\\playerFace");
@@ -138,6 +144,25 @@ namespace BomberManClone
             healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, player2HealthDisplay));   // player 2
             healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, player3HealthDisplay));   // player 3 
             healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, player4HealthDisplay));   // player 4 
+
+            // SoundEffects
+            buttonHoverSfx = Content.Load<SoundEffect>("Sounds\\UI1");
+            buttonPressedSfx = Content.Load<SoundEffect>("Sounds\\UI2");
+            maximiseSfx = Content.Load<SoundEffect>("Sounds\\maximise");
+            minimiseSfx = Content.Load<SoundEffect>("Sounds\\minimise");
+
+            buttonHoverInstance = buttonHoverSfx.CreateInstance();
+            buttonPressedInstance = buttonPressedSfx.CreateInstance();
+            maximiseInstance = maximiseSfx.CreateInstance();
+            minimiseInstance = minimiseSfx.CreateInstance();
+
+
+            //Buttons
+            buttonTxr = Content.Load<Texture2D>("UI\\button");
+            buttonTxrPressed = Content.Load<Texture2D>("UI\\button_pressed");
+            buttons.Add(new Button(buttonTxr, buttonTxrPressed, new Point(100, 100), buttonHoverSfx, maximiseSfx));
+            buttons.Add(new Button(buttonTxr, buttonTxrPressed, new Point(100, 200), buttonHoverSfx, minimiseSfx));
+
 
 
 
@@ -341,9 +366,12 @@ namespace BomberManClone
         {
             for (int i = 0; i < buttons.Count; i++)
             {
-                buttons[0].UpdateMe(mousepos, currMouse, oldMouse);
-                buttons[0].OnClick += ChangeState(GameState.InPlay);
-                buttons[1].UpdateMe(mousepos, currMouse, oldMouse);
+                buttons[0].UpdateMe(mousepos, currMouse, oldMouse); // Start Button
+                //buttons[0].OnClick += () => ChangeStateToPlay();
+                //buttons[0].OnClick += (_, _) => ChangeState(GameState.InPlay);
+                buttons[0].OnClick += delegate { ChangeState(GameState.InPlay); };
+                buttons[1].UpdateMe(mousepos, currMouse, oldMouse); // Exit Button
+                buttons[1].OnClick += () => Exit();
             }
 
         }
@@ -429,8 +457,8 @@ namespace BomberManClone
         {
             for (int i = 0; i < buttons.Count; i++)
             {
-                buttons[0].DrawMe(_spriteBatch, mousepos, currMouse, oldMouse, "Start", debugFont);
-                buttons[1].DrawMe(_spriteBatch, mousepos, currMouse, oldMouse, "Exit", debugFont);
+                buttons[0].DrawMe(_spriteBatch, "Start", debugFont);
+                buttons[1].DrawMe(_spriteBatch, "Exit", debugFont);
             }
         }
         void InPlayDraw(GameTime gt)

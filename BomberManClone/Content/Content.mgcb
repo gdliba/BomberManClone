@@ -128,6 +128,30 @@
 /processorParam:TextureFormat=Color
 /build:Objects/powerup_03.png
 
+#begin Sounds/maximise.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/maximise.wav
+
+#begin Sounds/minimise.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/minimise.wav
+
+#begin Sounds/UI1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/UI1.wav
+
+#begin Sounds/UI2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/UI2.wav
+
 #begin Tiles/empty.png
 /importer:TextureImporter
 /processor:TextureProcessor
