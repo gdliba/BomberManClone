@@ -195,8 +195,16 @@ namespace BomberManClone
             for (int x = 0; x < m_width; x++)
                 for (int y = 0; y < m_height; y++)
                 {
-                    sb.Draw(tiles[m_Cells[x, y].Type], new Vector2(x * tiles[0].Width, y * tiles[0].Height),
-                        Color.White);
+                    if (m_Cells[x, y].Type != 7 && m_Cells[x, y].Type != 13)
+                    {
+                        sb.Draw(tiles[m_Cells[x, y].Type], new Vector2(x * tiles[0].Width, y * tiles[0].Height),
+                            Color.White);
+                    }
+                    else
+                    {
+                        sb.Draw(tiles[m_Cells[x, y].Type], new Vector2(x * tiles[0].Width, y * tiles[0].Height),
+                                Color.DeepSkyBlue);
+                    }
                     //sb.DrawString(Game1.debugFont,
                     //    m_Cells[x, y].Type.ToString(), new Vector2(x * 64+32, y * 64+32), Color.Lavender);
                 }

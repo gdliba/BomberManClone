@@ -185,19 +185,19 @@ namespace BomberManClone
             // Setting up Tile Textures
             tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 0
             tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01")); // 1
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_03"));  // 2
+            tiles.Add(Content.Load<Texture2D>("Tiles\\shelf_01"));  // 2
             tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04")); // 3
             tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04")); // 4
             tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));// 5
             tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));// 6
 
-            tiles.Add(Content.Load<Texture2D>("Tiles\\void"));  // 7
+            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 7
             tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));  // 8
             tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 9
             tiles.Add(Content.Load<Texture2D>("Tiles\\occupiedCell"));  // 10
             tiles.Add(Content.Load<Texture2D>("Tiles\\empty"));  // 11
             tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01")); // 12
-            tiles.Add(Content.Load<Texture2D>("Tiles\\void"));  // 13
+            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 13
 
 
 
@@ -230,15 +230,15 @@ namespace BomberManClone
                 {11, 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 6, 11},
                 {11, 3, 12, 12, 1, 1, 1, 1, 1, 1, 1, 1, 1, 12, 12, 4, 11},
                 {11, 3, 12, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 12, 4, 11},
-                {11, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 11},
+                {11, 3, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 4, 11},
+                {11, 3, 1, 2, 1, 2, 1, 2, 2, 2, 1, 2, 1, 2, 1, 4, 11},
+                {11, 3, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 4, 11},
                 {11, 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4, 11},
                 {11, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 11},
+                {11, 3, 1, 2, 1, 2, 1, 2, 2, 2, 1, 2, 1, 2, 1, 4, 11},
+                {11, 3, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 4, 11},
                 {11, 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4, 11},
-                {11, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 11},
-                {11, 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4, 11},
-                {11, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 11},
-                {11, 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4, 11},
-                {11, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 11},
+                {11, 3, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 4, 11},
                 {11, 3, 12, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 12, 4, 11},
                 {11, 3, 12, 12, 1, 1, 1, 1, 1, 1, 1, 1, 1, 12, 12, 4, 11},
                 {11, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 11},
@@ -272,7 +272,7 @@ namespace BomberManClone
         }
         public bool PlaceBomb(Point pos, GameTime gt, int explosionRadius)
         {
-            Bomb newBomb = new Bomb(Content.Load<Texture2D>("Objects\\plate"), pos, explosionRadius);
+            Bomb newBomb = new Bomb(Content.Load<Texture2D>("Objects\\sodaBomb"), pos, explosionRadius);
             bombs.Add(newBomb);
 
             // Subscribe to the OnExplode event
