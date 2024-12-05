@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
@@ -17,6 +18,7 @@ namespace BomberManClone
         private float m_fuseCounter;
         private float m_fuseTrigger;
         private int m_explosionRadius;
+        private SoundEffect m_fuzeSfx;
 
         private BombStates m_state;
         public BombStates State { get { return m_state; } }
@@ -24,7 +26,7 @@ namespace BomberManClone
         public event Action OnExplode; // Event that will notify when the bomb explodes
 
 
-        public Bomb(Texture2D txr, Point placedPosition, int explosionRadius)
+        public Bomb(Texture2D txr, Point placedPosition, int explosionRadius, SoundEffect fuzeSfx)
             : base (txr, placedPosition)
         {
             m_txr = txr;
@@ -35,6 +37,7 @@ namespace BomberManClone
             m_fuseTrigger = 0;
 
             m_explosionRadius = explosionRadius;
+            m_fuzeSfx = fuzeSfx;
         }
         public void UpdateMe(GameTime gt,Map currentMap)
         {
@@ -43,6 +46,7 @@ namespace BomberManClone
             switch (m_state)
             {
                 case BombStates.Placed:
+                    m_fuzeSfx.Play();
                     currentMap.SetCellToBomb(m_position);
                     m_state = BombStates.Primed;
                     break;

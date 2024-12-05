@@ -74,7 +74,7 @@ namespace BomberManClone
         Point player1HealthDisplay, player2HealthDisplay, player3HealthDisplay, player4HealthDisplay;
 
         // Sounds
-        SoundEffect buttonHoverSfx, buttonPressedSfx, maximiseSfx, minimiseSfx, footstepSfx, PUspawnSfx, deathSfx;
+        SoundEffect buttonHoverSfx, buttonPressedSfx, maximiseSfx, minimiseSfx, footstepSfx, PUspawnSfx, deathSfx, fuzeSfx;
         SoundEffectInstance buttonHoverInstance, buttonPressedInstance, maximiseInstance, minimiseInstance;
 
         #endregion
@@ -160,6 +160,8 @@ namespace BomberManClone
             footstepSfx = Content.Load<SoundEffect>("Sounds\\footstep");
             PUspawnSfx = Content.Load<SoundEffect>("Sounds\\PUSpawn");
             deathSfx = Content.Load<SoundEffect>("Sounds\\death");
+            fuzeSfx = Content.Load<SoundEffect>("Sounds\\sizzle");
+
 
 
 
@@ -272,7 +274,7 @@ namespace BomberManClone
         }
         public bool PlaceBomb(Point pos, GameTime gt, int explosionRadius)
         {
-            Bomb newBomb = new Bomb(Content.Load<Texture2D>("Objects\\sodaBomb"), pos, explosionRadius);
+            Bomb newBomb = new Bomb(Content.Load<Texture2D>("Objects\\sodaBomb"), pos, explosionRadius, fuzeSfx);
             bombs.Add(newBomb);
 
             // Subscribe to the OnExplode event

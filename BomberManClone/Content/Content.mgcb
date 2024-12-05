@@ -182,6 +182,12 @@
 /processorParam:Quality=Best
 /build:Sounds/PUSpawn.wav
 
+#begin Sounds/sizzle.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/sizzle.wav
+
 #begin Sounds/UI1.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
