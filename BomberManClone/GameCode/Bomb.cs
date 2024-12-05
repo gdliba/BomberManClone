@@ -41,12 +41,13 @@ namespace BomberManClone
         }
         public void UpdateMe(GameTime gt,Map currentMap)
         {
+            SoundEffectInstance fuzeInstance = m_fuzeSfx.CreateInstance();
             if (currentMap.IsCellExploding(m_position))
                 m_state=BombStates.Exploding;
             switch (m_state)
             {
                 case BombStates.Placed:
-                    m_fuzeSfx.Play();
+                    fuzeInstance.Play();
                     currentMap.SetCellToBomb(m_position);
                     m_state = BombStates.Primed;
                     break;
@@ -56,6 +57,9 @@ namespace BomberManClone
                     break;
                 case BombStates.Exploding:
                     Explode(currentMap, gt);
+                    break;
+                case BombStates.Dead:
+                    fuzeInstance.Stop();
                     break;
             }
         }
