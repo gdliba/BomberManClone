@@ -38,6 +38,7 @@ namespace BomberManClone
 
             m_explosionRadius = explosionRadius;
             m_fuzeInstance = fuzeSfx.CreateInstance();
+            m_fuzeInstance.Volume = .2f;
         }
         public void UpdateMe(GameTime gt,Map currentMap)
         {
@@ -56,8 +57,6 @@ namespace BomberManClone
                     break;
                 case BombStates.Exploding:
                     Explode(currentMap, gt);
-                    break;
-                case BombStates.Dead:
                     break;
             }
         }

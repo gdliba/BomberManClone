@@ -178,8 +178,14 @@ namespace BomberManClone
             buttonTxr = Content.Load<Texture2D>("UI\\button");
             buttonTxrPressed = Content.Load<Texture2D>("UI\\button_pressed");
 
-            buttons.Add(new Button(buttonTxr, buttonTxrPressed, startButtonPos, buttonHoverSfx, maximiseSfx));
-            buttons.Add(new Button(buttonTxr, buttonTxrPressed, exitButtonPos, buttonHoverSfx, minimiseSfx));
+            var startButton = new Button(buttonTxr, buttonTxrPressed, startButtonPos, buttonHoverSfx, maximiseSfx);
+            startButton.OnClick += delegate { ChangeState(GameState.InPlay); };
+            buttons.Add(startButton);
+
+            var exitButton = new Button(buttonTxr, buttonTxrPressed, exitButtonPos, buttonHoverSfx, minimiseSfx);
+            exitButton.OnClick += ()=> Exit();
+            buttons.Add(exitButton);
+
 
 
 
@@ -270,7 +276,7 @@ namespace BomberManClone
 
             // Use this Map
             currentMap = new Map(finishedLevel);
-            currentMap.SpawnCrates(Content.Load<Texture2D>("Objects\\crate_01"), crates);
+            //currentMap.SpawnCrates(Content.Load<Texture2D>("Objects\\crate_01"), crates);
         }
         public bool PlaceBomb(Point pos, GameTime gt, int explosionRadius)
         {
@@ -313,6 +319,8 @@ namespace BomberManClone
         public void ChangeState(GameState state)
         {
             currentGameState = state;
+            currentMap = new Map(finishedLevel);
+            currentMap.SpawnCrates(Content.Load<Texture2D>("Objects\\crate_01"), crates);
 
         }
 
@@ -387,12 +395,14 @@ namespace BomberManClone
         {
             for (int i = 0; i < buttons.Count; i++)
             {
-                buttons[0].UpdateMe(mousepos, currMouse, oldMouse); // Start Button
-                //buttons[0].OnClick += () => ChangeStateToPlay();
-                //buttons[0].OnClick += (_, _) => ChangeState(GameState.InPlay);
-                buttons[0].OnClick += delegate { ChangeState(GameState.InPlay); };
-                buttons[1].UpdateMe(mousepos, currMouse, oldMouse); // Exit Button
-                buttons[1].OnClick += () => Exit();
+                buttons[i].UpdateMe(mousepos, currMouse, oldMouse); // Start Button
+
+                //buttons[0].UpdateMe(mousepos, currMouse, oldMouse); // Start Button
+                ////buttons[0].OnClick += () => ChangeStateToPlay();
+                ////buttons[0].OnClick += (_, _) => ChangeState(GameState.InPlay);
+                //buttons[0].OnClick += delegate { ChangeState(GameState.InPlay); };
+                //buttons[1].UpdateMe(mousepos, currMouse, oldMouse); // Exit Button
+                //buttons[1].OnClick += () => Exit();
             }
 
         }
