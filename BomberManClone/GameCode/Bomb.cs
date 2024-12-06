@@ -18,7 +18,7 @@ namespace BomberManClone
         private float m_fuseCounter;
         private float m_fuseTrigger;
         private int m_explosionRadius;
-        private SoundEffect m_fuzeSfx;
+        private SoundEffectInstance m_fuzeInstance;
 
         private BombStates m_state;
         public BombStates State { get { return m_state; } }
@@ -37,17 +37,16 @@ namespace BomberManClone
             m_fuseTrigger = 0;
 
             m_explosionRadius = explosionRadius;
-            m_fuzeSfx = fuzeSfx;
+            m_fuzeInstance = fuzeSfx.CreateInstance();
         }
         public void UpdateMe(GameTime gt,Map currentMap)
         {
-            SoundEffectInstance fuzeInstance = m_fuzeSfx.CreateInstance();
             if (currentMap.IsCellExploding(m_position))
                 m_state=BombStates.Exploding;
             switch (m_state)
             {
                 case BombStates.Placed:
-                    fuzeInstance.Play();
+                    m_fuzeInstance.Play();
                     currentMap.SetCellToBomb(m_position);
                     m_state = BombStates.Primed;
                     break;
@@ -59,7 +58,6 @@ namespace BomberManClone
                     Explode(currentMap, gt);
                     break;
                 case BombStates.Dead:
-                    fuzeInstance.Stop();
                     break;
             }
         }
@@ -71,6 +69,7 @@ namespace BomberManClone
         }
         public void Explode(Map currentMap, GameTime gt)
         {
+            m_fuzeInstance.Stop();
             currentMap.RegularBombExplosion(m_position,gt,m_explosionRadius);
             m_state = BombStates.Dead;
 
