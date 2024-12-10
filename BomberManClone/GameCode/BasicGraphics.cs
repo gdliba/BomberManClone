@@ -5,7 +5,7 @@ using System.Diagnostics.Metrics;
 
 namespace BomberManClone
 {
-    class StaticGraphic
+    abstract class StaticGraphic
     {
         protected Texture2D m_txr;
         protected Point m_position;

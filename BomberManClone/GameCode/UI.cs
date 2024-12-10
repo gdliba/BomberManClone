@@ -12,6 +12,7 @@ namespace BomberManClone
     {
         private Texture2D m_emptyTxr;
         private int m_maxHealth;
+        private int m_playerHealth;
 
         public HealthUI(Texture2D txr,Texture2D emptyTxr, Point pos)
             : base(txr, pos)
@@ -21,10 +22,14 @@ namespace BomberManClone
             m_emptyTxr = emptyTxr;
             m_maxHealth = 3;
         }
-        public void DrawMe(SpriteBatch sb, int playerhealth)
+        public void UpdateMe(int playerhealth)
+        {
+            m_playerHealth = playerhealth;
+        }
+        public override void DrawMe(SpriteBatch sb)
         {
             int i = 0;
-            for (; i < playerhealth; i++)
+            for (; i < m_playerHealth; i++)
                 // Draw the filled faces
                 sb.Draw(m_txr, new Vector2(m_position.X, m_position.Y + m_txr.Height * i), Color.White);
             for (; i < m_maxHealth; i++)
