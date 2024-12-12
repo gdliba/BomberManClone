@@ -116,6 +116,13 @@ namespace BomberManClone
         {
             m_Cells[idx.X, idx.Y].Type = 0;
         }
+        public bool IsCellBomb(Point idx)
+        {
+            if(m_Cells[idx.X, idx.Y].Type == 0)
+                return true;
+             
+            return false;
+        }
         public bool IsCellExploding(Point idx)
         {
             if (m_Cells[idx.X, idx.Y].Type == 7)
@@ -130,7 +137,7 @@ namespace BomberManClone
         }
         public void PlayerIsOccupyingCell(Point idx)
         {
-            m_Cells[idx.X, idx.Y].Type = 0;
+            m_Cells[idx.X, idx.Y].Type = 14;
             m_Cells[idx.X, idx.Y].Duration = m_occupiedCellDuration;
         }
         public void RegularBombExplosion(Point idx, GameTime gt, int explosionRange)

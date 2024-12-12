@@ -24,6 +24,7 @@ namespace BomberManClone
         private Point m_startPosition;
         private Texture2D m_deathTxr;
         private Color m_tint;
+        private bool m_bombDroppedHere;
 
         private bool m_isWalking;
         private SoundEffect m_footstepSfx;
@@ -51,6 +52,7 @@ namespace BomberManClone
             m_deathTxr = deathTxr;
             m_deathSfx = deathSfx;
             m_tint = tint;
+            m_bombDroppedHere = false;
         }
         public bool UpdateMe(GameTime gameTime, Map currentMap,
             KeyboardState kb_curr, KeyboardState kb_old, GamePadState curr_pad, GamePadState old_pad)
@@ -235,11 +237,12 @@ namespace BomberManClone
             else
                 m_isWalking = false;
             #endregion
-            if (curr_pad.Buttons.X == ButtonState.Pressed && old_pad.Buttons.X == ButtonState.Released)
+            if (curr_pad.Buttons.X == ButtonState.Pressed && old_pad.Buttons.X == ButtonState.Released && !m_bombDroppedHere)
             {
                 if (m_numberOfBombs > 0)
                 {
                     m_numberOfBombs--;
+                    m_bombDroppedHere = true;
                     return true;
                 }
                 else
@@ -248,6 +251,11 @@ namespace BomberManClone
             else
                 return false;
 
+        }
+        public override void MoveMe(Direction moveDir)
+        {
+            m_bombDroppedHere=false;
+            base.MoveMe(moveDir);
         }
         public void PlayFootstep()
         {
@@ -450,6 +458,7 @@ namespace BomberManClone
             m_explosionRadius = 3;
             m_targetLocation = m_startPosition.ToVector2();
             m_position = m_startPosition.ToVector2 ();
+            m_bombDroppedHere = false;
         }
         public void DrawMe(SpriteBatch sb, GameTime gt, int tileWidth, int tileHeight)
         {

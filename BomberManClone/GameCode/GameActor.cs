@@ -43,7 +43,7 @@ namespace BomberManClone
             m_fps = fps;
             m_facing = Direction.South;
         }
-        public void MoveMe(Direction moveDir)
+        public virtual void MoveMe(Direction moveDir)
         {
             if (m_targetLocation != m_position)
                 return;

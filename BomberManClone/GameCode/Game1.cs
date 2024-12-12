@@ -28,7 +28,7 @@ namespace BomberManClone
 
         #region VARIABLES
         // Font
-        SpriteFont UIfont;
+        SpriteFont UIfont, bigUIfont;
 
         // Convenient
         int screenWidth, screenHeight;
@@ -143,11 +143,11 @@ namespace BomberManClone
             currentGameState = GameState.Start;
 
             //Number of Players
-            numberOfPlayers = 1;
+            numberOfPlayers = 2;
 
             // Timers and Countdowns
             gameOverCounter = 3;
-            gameOverCounterReset = 0;
+            gameOverCounterReset = 3;
 
             base.Initialize();
         }
@@ -162,6 +162,8 @@ namespace BomberManClone
             debugFont = Content.Load<SpriteFont>("Fonts\\Arial07");
 #endif
             UIfont = Content.Load<SpriteFont>("Fonts\\UIfont");
+            bigUIfont = Content.Load<SpriteFont>("Fonts\\BigUIfont");
+
 
             // Bombs
             //bombs.Add(new Bomb (Content.Load<Texture2D>("Objects\\plate"), new Point(4, 1)));
@@ -218,6 +220,7 @@ namespace BomberManClone
                 {
                     players.Add(new PC(Globals.PlayerSpawnPoints[i], playerTxr, 3, 4, footstepSfx, toombstoneTxr, deathSfx, Globals.PlayerTints[i]));
                     gamePadStates.Add(new GamePadState());
+                    oldGamePadStates.Add(new GamePadState());
                 }
                 ChangeState(GameState.InPlay); 
             };
@@ -280,6 +283,8 @@ namespace BomberManClone
             tiles.Add(Content.Load<Texture2D>("Tiles\\empty"));  // 11
             tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01")); // 12
             tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 13
+            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 14
+
 
 
 
@@ -366,7 +371,7 @@ namespace BomberManClone
                 bombs[j].UpdateMe(gt, currentMap);
                 if (bombs[j].State == BombStates.Dead)
                 {
-                    bombs.RemoveAt(i);
+                    bombs.RemoveAt(j);
                     return true;
                 }
             }
@@ -400,13 +405,22 @@ namespace BomberManClone
                 currentMap.SpawnCrates(Content.Load<Texture2D>("Objects\\crate_01"), crates);
 
         }
+        public void RestartGame()
+        {
+            gameOverCounter = gameOverCounterReset;
+            crates.Clear();
+            powerUps.Clear();
+            bombs.Clear();
+            currentMap = new Map(finishedLevel);
+            currentMap.SpawnCrates(Content.Load<Texture2D>("Objects\\crate_01"), crates);
+        }
 
         protected override void Update(GameTime gt)
         {
             for (int i = 0; i < gamePadStates.Count; i++)
             {
 
-                gamePadStates[i] = GamePad.GetState((PlayerIndex)i);
+                gamePadStates[i] = GamePad.GetState((PlayerIndex) i);
             }
 
             // health update
@@ -449,7 +463,6 @@ namespace BomberManClone
             // set the old gamepadstate to the current one
             for (int i = 0; i < gamePadStates.Count; i++)
             {
-                oldGamePadStates.Add(new GamePadState());
                 oldGamePadStates[i] = gamePadStates[i];
             }
         }
@@ -659,6 +672,12 @@ namespace BomberManClone
             //    button.Value.DrawMe(_spriteBatch);
             //}
 
+            //Text
+            Rectangle tempRect;
+            Vector2 textlength = UIfont.MeasureString("Select Number Of Players, Then Press Start");
+            tempRect = new Rectangle(startButtonPos.X - 210, startButtonPos.Y - 210, (int)textlength.X+20, (int)textlength.Y+20);
+            gameOverScreenTint.DrawMeAsRect(_spriteBatch, tempRect, Color.Black * .75f);
+            _spriteBatch.DrawString(UIfont, "Select Number Of Players, Then Press Start", new Vector2(startButtonPos.X-200, startButtonPos.Y-200), Color.White);
             
             // Buttons
             foreach (var buttonName in Globals.StartScreenButtons)
@@ -721,16 +740,30 @@ namespace BomberManClone
                 players[i].DrawMe(_spriteBatch, gt, tiles[0].Width, tiles[1].Height);
             }
 
-            // Tied Situation
+            // Game Over Text
+            // If Tied
             int livingPlayers = 0;
             for (int i = 0; i < players.Count; i++)
             {
                 if (players[i].State != PlayerState.Dead)
                     livingPlayers++;
-                if (livingPlayers == 0)
-                {
-                    _spriteBatch.DrawString(UIfont, "TIED", new Vector2(100, 100), Color.Black);
+            }
+            if (livingPlayers == 0)
+            {
+                Vector2 textlength = bigUIfont.MeasureString("TIED");
 
+                _spriteBatch.DrawString(bigUIfont, "TIED", new Vector2(screenCentre.X - textlength.X / 2, screenCentre.Y - 200), Color.Black);
+            }
+            // else if there is a clear winner
+            else
+            {
+                for (int i = 0; i < players.Count; i++)
+                {
+                    if (players[i].State != PlayerState.Dead)
+                    {
+                        Vector2 textlength = bigUIfont.MeasureString("PLAYER " + (i + 1) + " WINS");
+                        _spriteBatch.DrawString(bigUIfont, "PLAYER " + (i + 1) + " WINS", new Vector2(screenCentre.X - textlength.X / 2, screenCentre.Y - 200), Color.Black);
+                    }
                 }
             }
 
