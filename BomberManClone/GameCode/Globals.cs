@@ -18,5 +18,14 @@ namespace BomberManClone
             Color.LightSkyBlue,
             Color.Pink
         };
+
+        public static readonly List<string> StartScreenButtons = new List<string>()
+        {
+            "Start",
+            "Exit",
+            "2 Players",
+            "3 Players",
+            "4 Players"
+        };
     }
 }

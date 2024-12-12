@@ -53,9 +53,11 @@ namespace BomberManClone
         private SoundEffect m_hoverSfx, m_pressedSfx;
         private bool m_HoverSoundHasPlayed, m_PressedSoundHasPlayed;
         private StateOfButton m_state;
+        private string m_text;
+        private SpriteFont m_font;
 
 
-        public Button(Texture2D txr, Texture2D txrPressed, Point pos, SoundEffect hoverSfx, SoundEffect pressedSfx)
+        public Button(string text, SpriteFont font, Texture2D txr, Texture2D txrPressed, Point pos, SoundEffect hoverSfx, SoundEffect pressedSfx)
             : base(txr, pos)
         {
             m_txrPressed = txrPressed;
@@ -67,6 +69,8 @@ namespace BomberManClone
             m_HoverSoundHasPlayed = false;
             m_PressedSoundHasPlayed = false;
             m_state = StateOfButton.Neutral;
+            m_text = text;
+            m_font = font;
         }
         public void UpdateMe(Point mousepos, MouseState currMouse, MouseState oldMouse)
         {
@@ -120,11 +124,11 @@ namespace BomberManClone
             }
         }
 
-        public void DrawMe(SpriteBatch sb, string text, SpriteFont font)
+        public override void DrawMe(SpriteBatch sb)
         {
 
             // Set up string measurements to draw text on the Button
-            Vector2 textlength = font.MeasureString(text);
+            Vector2 textlength = m_font.MeasureString(m_text);
             var halfButtonX = m_position.X + m_txr.Width / 2;
             var halfButtonY = m_position.Y + m_txr.Height / 2;
 
@@ -132,15 +136,15 @@ namespace BomberManClone
             {
                 case StateOfButton.Neutral:
                     sb.Draw(m_txr, new Vector2(m_position.X, m_position.Y), Color.LightGreen);
-                    sb.DrawString(font, text, new Vector2(halfButtonX - (int)textlength.X / 2, halfButtonY - (int)textlength.Y / 2), Color.Black);
+                    sb.DrawString(m_font, m_text, new Vector2(halfButtonX - (int)textlength.X / 2, halfButtonY - (int)textlength.Y / 2), Color.Black);
                     break;
                 case StateOfButton.Hovered:
                     sb.Draw(m_txr, new Vector2(m_position.X, m_position.Y), Color.PaleGreen);
-                    sb.DrawString(font, text, new Vector2(halfButtonX - (int)textlength.X / 2, halfButtonY - (int)textlength.Y / 2), Color.Black);
+                    sb.DrawString(m_font, m_text, new Vector2(halfButtonX - (int)textlength.X / 2, halfButtonY - (int)textlength.Y / 2), Color.Black);
                     break;
                 case StateOfButton.Pressed:
                     sb.Draw(m_txrPressed, new Vector2(m_position.X, m_position.Y + 5), Color.Orange);
-                    sb.DrawString(font, text, new Vector2(halfButtonX - (int)textlength.X / 2, halfButtonY - (int)textlength.Y / 2 + 5), Color.Black);
+                    sb.DrawString(m_font, m_text, new Vector2(halfButtonX - (int)textlength.X / 2, halfButtonY - (int)textlength.Y / 2 + 5), Color.Black);
                     break;
             }
         }

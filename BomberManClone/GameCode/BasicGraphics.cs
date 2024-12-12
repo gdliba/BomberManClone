@@ -5,7 +5,7 @@ using System.Diagnostics.Metrics;
 
 namespace BomberManClone
 {
-    abstract class StaticGraphic
+    class StaticGraphic
     {
         protected Texture2D m_txr;
         protected Point m_position;
@@ -14,6 +14,10 @@ namespace BomberManClone
         {
             m_txr = txr;
             m_position = position;
+        }
+        public virtual void DrawMeAsRect(SpriteBatch sb, Rectangle rect, Color tint)
+        {
+            sb.Draw(m_txr, rect, tint);
         }
         public virtual void DrawMe(SpriteBatch sb)
         {
