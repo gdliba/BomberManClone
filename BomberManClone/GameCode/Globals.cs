@@ -27,5 +27,12 @@ namespace BomberManClone
             "3 Players",
             "4 Players"
         };
+
+        public static readonly List<string> GameOverScreenButtons = new List<string>()
+        {
+            "Restart",
+            "Main Menu"
+
+        };
     }
 }
