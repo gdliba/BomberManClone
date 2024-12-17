@@ -11,7 +11,7 @@ namespace BomberManClone
         West,
         None
     }
-    class GameActor
+    abstract class GameActor
     {
         protected Direction m_facing;
         protected Vector2 m_position;

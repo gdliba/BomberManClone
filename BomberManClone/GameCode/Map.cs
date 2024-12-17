@@ -227,34 +227,39 @@ namespace BomberManClone
             m_Cells[idx.X, idx.Y].Duration = m_occupiedCellDuration;
         }
         /// <summary>
-        /// 
+        /// Logic called when a bomb on THIS cell exploads.
         /// </summary>
         /// <param name="idx"></param>
-        /// <param name="gt"></param>
         /// <param name="explosionRange"></param>
-        public void BombExplosion(Point idx, GameTime gt, int explosionRange)
+        public void BombExplosion(Point idx, int explosionRange)
         {
+            // Propagate the exploadion in the 4 cardinal directions
             PropagateExplosion(new Point(1, 0));
             PropagateExplosion(new Point(-1, 0));
             PropagateExplosion(new Point(0, 1));
             PropagateExplosion(new Point(0, -1));
 
+            // Set the cell in the centre of the explosion (THIS cell) to type 7 (exploading cell)
             m_Cells[idx.X, idx.Y].Type = 7;
+            // Declare the duration THIS cell will remain type 7 for
             m_Cells[idx.X, idx.Y].Duration = m_explosionDuration;
 
-
+            // For each cardinal direction follow this logic
             void PropagateExplosion(Point dir)
             {
+                // Loop through, up to the maximum explosion range
                 for (int i = 1; i < explosionRange+1; i++)
                 {
                     int newX = idx.X + dir.X * i;
                     int newY = idx.Y + dir.Y * i;
 
-                    // Check if hitting a Crate or powerup
+                    // If hitting a Crate or powerup
                     if (m_Cells[newX, newY].Type == 9)
                     {
+                        // expload up to said cell 
                         m_Cells[newX, newY].Type = 13;
                         m_Cells[newX, newY].Duration = m_explosionDuration + i * .1f;
+                        // BUT do not continue propagation
                         break;
                     }
 
@@ -262,8 +267,10 @@ namespace BomberManClone
                     else if (m_Cells[newX, newY].Type == 2 || m_Cells[newX, newY].Type == 3 
                         || m_Cells[newX, newY].Type == 4 || m_Cells[newX, newY].Type == 8)
                         break;
-
+                    // Set the cell in the centre of the explosion (THIS cell) to type 7 (exploading cell)
                     m_Cells[newX, newY].Type = 7;
+                    // Declare the duration THIS cell will remain type 7 for.
+                    // In this case the logic makes it so the explosion fades (turns back to type 1) from the centre outward.
                     m_Cells[newX, newY].Duration = m_explosionDuration + i * .1f;
 
 
@@ -271,6 +278,15 @@ namespace BomberManClone
             }
 
         }
+        /// <summary>
+        /// Method that scans the map for eligible cells (in this case of type 1)
+        /// on which to spawn crates. It then attempts to spawn a crate on each of the cells.
+        /// This method is here rather than Game1 because a random number must be generated for
+        /// every individual cell that is eligible, rather than once for all.
+        /// Otherwise either all or none of the eligible cells would contain crates.
+        /// </summary>
+        /// <param name="txr"></param>
+        /// <param name="crates"></param>
         public void SpawnCrates(Texture2D txr, List<Crate> crates)
         {
             for (int y = 0; y < m_Cells.GetLength(1); y++)
@@ -289,6 +305,12 @@ namespace BomberManClone
                 }
             }
         }
+        /// <summary>
+        /// Generic drawm method for the map.
+        /// It essentially draws the 2D array Game1 gives the Map class.
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="tiles"></param>
         public void DrawMe(SpriteBatch sb, List<Texture2D> tiles)
         {
             for (int x = 0; x < m_width; x++)
