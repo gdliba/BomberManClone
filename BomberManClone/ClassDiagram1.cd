@@ -3,7 +3,7 @@
   <Class Name="BomberManClone.StaticGraphic">
     <Position X="9" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAQAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAQAAACAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAA=</HashCode>
       <FileName>GameCode\BasicGraphics.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -29,9 +29,9 @@
     </TypeIdentifier>
   </Class>
   <Class Name="BomberManClone.Game1">
-    <Position X="19.5" Y="0.5" Width="2" />
+    <Position X="17" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>gAUgwIgCEANyBxjEOQDCRAEMEgEIYYICnIEIQgEhQAQ=</HashCode>
+      <HashCode>EAWAwMgCEAIwBxjEMADSQEEM0xMAQYACpIAAAgGBwAQ=</HashCode>
       <FileName>GameCode\Game1.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -43,30 +43,30 @@
     </TypeIdentifier>
   </Class>
   <Class Name="BomberManClone.Globals">
-    <Position X="22.75" Y="0.5" Width="1.75" />
+    <Position X="19.25" Y="6.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAQAAAAAA=</HashCode>
+      <HashCode>AAAAAEAAgEECAQACAAAAAAAACAhAAAAAgQAAQAAAAIA=</HashCode>
       <FileName>GameCode\Globals.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="BomberManClone.Cell">
-    <Position X="27.25" Y="0.75" Width="1.5" />
+    <Position X="19.25" Y="10.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
       <FileName>GameCode\Map.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="BomberManClone.Map">
-    <Position X="25" Y="0.75" Width="2" />
+    <Position X="19.25" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>KAQACQAQAACAAAAFAAAAAAATAACAAIGASAAAAACEAAA=</HashCode>
+      <HashCode>KAQACQAQBACAAAAFAAAAAAATAACAAIGASAAAAACEAAA=</HashCode>
       <FileName>GameCode\Map.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="BomberManClone.PC">
     <Position X="9" Y="12.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>BEAEAQEMAAECBAAggiAAAAAlBAAgAAAICFABRAAwABA=</HashCode>
+      <HashCode>BEAECQEMAAkCBAAggCABAQAlAAAAAAAIAFABRAgwABA=</HashCode>
       <FileName>GameCode\PC.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -80,68 +80,68 @@
   <Class Name="BomberManClone.HealthUI">
     <Position X="15.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAQAAAAAAgAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAQAAAAAAgAEAEAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
       <FileName>GameCode\UI.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="BomberManClone.Button">
     <Position X="4.75" Y="3.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>ABAAQQAABICBAQAAAAAAAAACAAQAAQAAAAQBAAAAAAA=</HashCode>
+      <HashCode>ABAAQQAAJICBAwAAAAAAAAACAAQAAQAAAAQBAAAAAAA=</HashCode>
       <FileName>GameCode\UI.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Enum Name="BomberManClone.BombStates">
-    <Position X="29.25" Y="1.5" Width="1.5" />
+    <Position X="26.25" Y="5.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAEAACACAAAA=</HashCode>
       <FileName>GameCode\Bomb.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="BomberManClone.CrateState">
-    <Position X="19.5" Y="2.75" Width="1.5" />
+    <Position X="21.75" Y="5.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>IAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAEAACAAAAAA=</HashCode>
       <FileName>GameCode\Crate.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="BomberManClone.GameState">
-    <Position X="26.25" Y="7" Width="1.5" />
+    <Position X="21.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAgAAAACAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAA=</HashCode>
       <FileName>GameCode\Game1.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="BomberManClone.Direction">
-    <Position X="22.75" Y="3" Width="1.5" />
+    <Position X="24" Y="2" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AACAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAEBAAQ=</HashCode>
       <FileName>GameCode\GameActor.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="BomberManClone.PlayerState">
-    <Position X="28.5" Y="6.75" Width="1.5" />
+    <Position X="24" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAECAAAAAA=</HashCode>
       <FileName>GameCode\PC.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="BomberManClone.PowerUpType">
-    <Position X="24.75" Y="7.75" Width="1.5" />
+    <Position X="26.25" Y="2" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAABIAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>GameCode\PowerUp.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="BomberManClone.PowerUpState">
-    <Position X="23" Y="5.5" Width="1.5" />
+    <Position X="26.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAEAACAAAAAA=</HashCode>
       <FileName>GameCode\PowerUp.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="BomberManClone.StateOfButton">
-    <Position X="29.5" Y="3.75" Width="1.5" />
+    <Position X="24" Y="5.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAEAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAEAAA=</HashCode>
       <FileName>GameCode\UI.cs</FileName>

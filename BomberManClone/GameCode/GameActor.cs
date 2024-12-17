@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 
 namespace BomberManClone
 {
@@ -27,7 +26,8 @@ namespace BomberManClone
         private float m_updateTrigger;
         private int m_fps;
 
-        // making life easier by making certain points into variables
+        // making life easier by making certain points
+        // into variables that will be referenced often
         protected Point m_northCell, m_southCell, m_eastCell, m_westCell;
 
         public GameActor(Point startPos, Texture2D txr, int frameCount, int fps)
@@ -43,6 +43,10 @@ namespace BomberManClone
             m_fps = fps;
             m_facing = Direction.South;
         }
+        /// <summary>
+        /// Move the GameActor in the cardinal directions when called.
+        /// </summary>
+        /// <param name="moveDir"> Takes in the cardinal direction that the GameActor wants to move in</param>
         public virtual void MoveMe(Direction moveDir)
         {
             if (m_targetLocation != m_position)
@@ -66,7 +70,15 @@ namespace BomberManClone
                     break;
             }
         }
-
+        /// <summary>
+        /// Draw method that cycles through the spritesheet and "animates" the game actor.
+        /// Draws the sprite with respect to the tile height and width.
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="gt"></param>
+        /// <param name="tileWidth"></param>
+        /// <param name="tileHeight"></param>
+        /// <param name="color"></param>
         public virtual void DrawMe(SpriteBatch sb, GameTime gt, int tileWidth, int tileHeight, Color color)
         {
             m_sourceRect.Y = (int)m_facing * m_sourceRect.Height;

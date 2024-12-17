@@ -30,11 +30,6 @@ namespace BomberManClone
         // Font
         SpriteFont UIfont, bigUIfont;
 
-        // Convenient
-        int screenWidth, screenHeight;
-        Point screenCentre;
-
-
         // Tiles/Map
         List<Texture2D> tiles;
         int[,] testfloor, testfloor2, finishedLevel;
@@ -68,16 +63,13 @@ namespace BomberManClone
         // Buttons
         Dictionary<string, Button> buttons;
         Texture2D buttonTxr, buttonTxrPressed;
-        Point startButtonPos, exitButtonPos, twoPlayerButtonPos, threePlayerButtonPos, fourPlayerButtonPos;
 
         // Health UI
         Texture2D healthTxr, healthTxrEmpty;
         List<HealthUI> healthDisplay;
-        Point player1HealthDisplay, player2HealthDisplay, player3HealthDisplay, player4HealthDisplay;
 
         // Sounds
-        SoundEffect buttonHoverSfx, buttonPressedSfx, maximiseSfx, minimiseSfx, footstepSfx, PUspawnSfx, deathSfx, fuzeSfx;
-        SoundEffectInstance buttonHoverInstance, buttonPressedInstance, maximiseInstance, minimiseInstance;
+        Dictionary<string, SoundEffect> soundEffects;
 
         // GamePadStates
         List<GamePadState> gamePadStates;
@@ -96,18 +88,13 @@ namespace BomberManClone
 
         public Game1()
         {
-            _graphics = new GraphicsDeviceManager(this);
+            Globals.Graphics = _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
             // Window size and window title settings
             Window.Title = "Supermarket Reloaded";
-            _graphics.PreferredBackBufferWidth = 1088;
-            _graphics.PreferredBackBufferHeight = 1088;
-
-            screenWidth = _graphics.PreferredBackBufferWidth;
-            screenHeight = _graphics.PreferredBackBufferHeight;
-            screenCentre = new Point(screenWidth/2, screenHeight/2);
+            Globals.ChangeResolution(1088, 1088);
         }
 
         protected override void Initialize()
@@ -119,6 +106,8 @@ namespace BomberManClone
             crates = new List<Crate>();
             crateSpawnPoints = new List<Point>();
 
+            soundEffects = new Dictionary<string, SoundEffect>();
+
             buttons = new Dictionary<string, Button>();
             //buttons = new List<Button>();
             healthDisplay = new List<HealthUI>();
@@ -126,28 +115,17 @@ namespace BomberManClone
             oldGamePadStates = new List<GamePadState>();
             players = new List<PC>();
 
-            // Setting points
-            player1HealthDisplay = new Point(0, 0); // top left
-            player2HealthDisplay = new Point(screenWidth-64, 12*64); // bottom right
-            player3HealthDisplay = new Point(screenWidth-64, 0); // top right
-            player4HealthDisplay = new Point(0, 12*64);
-
-            // Button Positions
-            startButtonPos = new Point(screenCentre.X - 80, screenCentre.Y - 22);
-            exitButtonPos = new Point(startButtonPos.X, screenCentre.Y + 45);
-            twoPlayerButtonPos = new Point(screenCentre.X - 400, startButtonPos.Y);
-            threePlayerButtonPos = new Point(twoPlayerButtonPos.X, twoPlayerButtonPos.Y + 60);
-            fourPlayerButtonPos = new Point(twoPlayerButtonPos.X, threePlayerButtonPos.Y + 60);
-
             // GameState
             currentGameState = GameState.Start;
 
             //Number of Players
-            numberOfPlayers = 2;
+            numberOfPlayers = 0;
 
             // Timers and Countdowns
             gameOverCounter = 3;
             gameOverCounterReset = 3;
+
+            Globals.Initialise();
 
             base.Initialize();
         }
@@ -164,56 +142,48 @@ namespace BomberManClone
             UIfont = Content.Load<SpriteFont>("Fonts\\UIfont");
             bigUIfont = Content.Load<SpriteFont>("Fonts\\BigUIfont");
 
-
-            // Bombs
-            //bombs.Add(new Bomb (Content.Load<Texture2D>("Objects\\plate"), new Point(4, 1)));
-
             // PowerUps
             speedPUText = Content.Load<Texture2D>("Objects\\powerup_01");
             extraBombPUText = Content.Load<Texture2D>("Objects\\powerup_02");
             explosionRadiusPUText = Content.Load<Texture2D>("Objects\\powerup_03");
-            // powerUps.Add(new PowerUp(explosionRadiusPUText, new Point(4, 5), PowerUpType.Speed));
-
-            // Crates
-            // crates.Add(new Crate(Content.Load<Texture2D>("Objects\\crate_01"), new Point(4, 1)));
-
 
             // Health UI
             healthTxr = Content.Load<Texture2D>("UI\\playerFace");
             healthTxrEmpty = Content.Load<Texture2D>("UI\\playerFace_empty");
-            healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, player1HealthDisplay));   // player 1
-            healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, player2HealthDisplay));   // player 2
-            healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, player3HealthDisplay));   // player 3 
-            healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, player4HealthDisplay));   // player 4 
+            for (int i = 0; i < Globals.HealthDisplayPoints.Count; i++)
+            {
+                healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, Globals.HealthDisplayPoints[i]));
+            };
 
+            #region SoundEffects
             // SoundEffects
-            buttonHoverSfx = Content.Load<SoundEffect>("Sounds\\UI1");
-            buttonPressedSfx = Content.Load<SoundEffect>("Sounds\\UI2");
-            maximiseSfx = Content.Load<SoundEffect>("Sounds\\maximise");
-            minimiseSfx = Content.Load<SoundEffect>("Sounds\\minimise");
-            footstepSfx = Content.Load<SoundEffect>("Sounds\\footstep");
-            PUspawnSfx = Content.Load<SoundEffect>("Sounds\\PUSpawn");
-            deathSfx = Content.Load<SoundEffect>("Sounds\\death");
-            fuzeSfx = Content.Load<SoundEffect>("Sounds\\sizzle");
-
-
-
-
-            buttonHoverInstance = buttonHoverSfx.CreateInstance();
-            buttonPressedInstance = buttonPressedSfx.CreateInstance();
-            maximiseInstance = maximiseSfx.CreateInstance();
-            minimiseInstance = minimiseSfx.CreateInstance();
-
+            var buttonHoverSfx = Content.Load<SoundEffect>("Sounds\\UI1");
+            soundEffects.Add("buttonHover", buttonHoverSfx);
+            var buttonPressedSfx = Content.Load<SoundEffect>("Sounds\\UI2");
+            soundEffects.Add("buttonPressed", buttonPressedSfx);
+            var maximiseSfx = Content.Load<SoundEffect>("Sounds\\maximise");
+            soundEffects.Add("maximise", maximiseSfx);
+            var minimiseSfx = Content.Load<SoundEffect>("Sounds\\minimise");
+            soundEffects.Add("minimise", minimiseSfx);
+            var footstepSfx = Content.Load<SoundEffect>("Sounds\\footstep");
+            soundEffects.Add("footstep", footstepSfx);
+            var PUspawnSfx = Content.Load<SoundEffect>("Sounds\\PUSpawn");
+            soundEffects.Add("powerupSpawn", PUspawnSfx);
+            var deathSfx = Content.Load<SoundEffect>("Sounds\\death");
+            soundEffects.Add("death", deathSfx);
+            var fuzeSfx = Content.Load<SoundEffect>("Sounds\\sizzle");
+            soundEffects.Add("fuze", fuzeSfx);
+            #endregion
             // Players
             toombstoneTxr = Content.Load<Texture2D>("Objects\\toombstone");
             playerTxr = Content.Load<Texture2D>("Characters\\player_spritesheetHighlighted");
-            //player1 = new PC(new Point(2, 1), Content.Load<Texture2D>("Characters\\player_spritesheetHighlighted"), 3, 4, footstepSfx, toombstoneTxr, deathSfx);
 
+            #region Buttons
             //Buttons
             buttonTxr = Content.Load<Texture2D>("UI\\button");
             buttonTxrPressed = Content.Load<Texture2D>("UI\\button_pressed");
 
-            var startButton = new Button("Start", UIfont,buttonTxr, buttonTxrPressed, startButtonPos, buttonHoverSfx, maximiseSfx);
+            var startButton = new Button("Start", UIfont,buttonTxr, buttonTxrPressed, Globals.ButtonPositions["startButton"], buttonHoverSfx, maximiseSfx);
             startButton.OnClick += delegate 
             {
                 for (int i = 0; i < numberOfPlayers; i++)
@@ -226,23 +196,23 @@ namespace BomberManClone
             };
             buttons.Add("Start", startButton);
 
-            var exitButton = new Button("Exit", UIfont, buttonTxr, buttonTxrPressed, exitButtonPos, buttonHoverSfx, minimiseSfx);
+            var exitButton = new Button("Exit", UIfont, buttonTxr, buttonTxrPressed, Globals.ButtonPositions["exitButton"], buttonHoverSfx, minimiseSfx);
             exitButton.OnClick += ()=> Exit();
             buttons.Add("Exit", exitButton);
 
-            var twoPlayersButton = new Button("2 Players", UIfont, buttonTxr, buttonTxrPressed, twoPlayerButtonPos, buttonHoverSfx, maximiseSfx);
+            var twoPlayersButton = new Button("2 Players", UIfont, buttonTxr, buttonTxrPressed, Globals.ButtonPositions["twoPlayersButton"], buttonHoverSfx, maximiseSfx);
             twoPlayersButton.OnClick += () => numberOfPlayers = 2;
             buttons.Add("2 Players", twoPlayersButton);
 
-            var threePlayersButton = new Button("3 Players", UIfont, buttonTxr, buttonTxrPressed, threePlayerButtonPos, buttonHoverSfx, maximiseSfx);
+            var threePlayersButton = new Button("3 Players", UIfont, buttonTxr, buttonTxrPressed, Globals.ButtonPositions["threePlayersButton"], buttonHoverSfx, maximiseSfx);
             threePlayersButton.OnClick += () => numberOfPlayers = 3;
             buttons.Add("3 Players", threePlayersButton);
 
-            var fourPlayersButton = new Button("4 Players", UIfont, buttonTxr, buttonTxrPressed, fourPlayerButtonPos, buttonHoverSfx, maximiseSfx);
+            var fourPlayersButton = new Button("4 Players", UIfont, buttonTxr, buttonTxrPressed, Globals.ButtonPositions["fourPlayersButton"], buttonHoverSfx, maximiseSfx);
             fourPlayersButton.OnClick += () => numberOfPlayers = 4;
             buttons.Add("4 Players", fourPlayersButton);
 
-            var restartButton = new Button("Restart", UIfont, buttonTxr, buttonTxrPressed, startButtonPos, buttonHoverSfx, maximiseSfx);
+            var restartButton = new Button("Restart", UIfont, buttonTxr, buttonTxrPressed, Globals.ButtonPositions["startButton"], buttonHoverSfx, maximiseSfx);
             restartButton.OnClick += delegate
             {
                 for (int i = 0; i < numberOfPlayers; i++)
@@ -253,42 +223,34 @@ namespace BomberManClone
             };
             buttons.Add("Restart", restartButton);
 
-            var mainMenuButton = new Button("Main Menu", UIfont, buttonTxr, buttonTxrPressed, exitButtonPos, buttonHoverSfx, minimiseSfx);
+            var mainMenuButton = new Button("Main Menu", UIfont, buttonTxr, buttonTxrPressed, Globals.ButtonPositions["exitButton"], buttonHoverSfx, minimiseSfx);
             mainMenuButton.OnClick += delegate
             { 
                 ChangeState(GameState.Start);
             };
             buttons.Add("Main Menu", mainMenuButton);
-
+            #endregion
 
             // game over screen tint
             gameOverScreenTint = new StaticGraphic(Content.Load<Texture2D>("pixel"), new Point(0,0));
 
-
-
-
             // Setting up Tile Textures
-            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 0
-            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01")); // 1
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_03"));  // 2
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04")); // 3
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04")); // 4
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));// 5
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));// 6
+            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));     // 0
+            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));     // 1
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_03"));       // 2
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));       // 3
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));       // 4
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));       // 5
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));       // 6
 
-            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 7
-            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));  // 8
-            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 9
+            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));     // 7
+            tiles.Add(Content.Load<Texture2D>("Tiles\\wall_04"));       // 8
+            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));     // 9
             tiles.Add(Content.Load<Texture2D>("Tiles\\occupiedCell"));  // 10
-            tiles.Add(Content.Load<Texture2D>("Tiles\\empty"));  // 11
-            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01")); // 12
-            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 13
-            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));  // 14
-
-
-
-
-
+            tiles.Add(Content.Load<Texture2D>("Tiles\\empty"));         // 11
+            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));     // 12
+            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));     // 13
+            tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));     // 14
 
             // Tile Layout
             testfloor = new int[17, 17]
@@ -359,8 +321,11 @@ namespace BomberManClone
         }
         public bool PlaceBomb(Point pos, GameTime gt, int explosionRadius, int i)
         {
-            var newBomb = new Bomb(Content.Load<Texture2D>("Objects\\sodaBomb"), pos, explosionRadius, fuzeSfx);
+            
+                
+            var newBomb = new Bomb(Content.Load<Texture2D>("Objects\\sodaBomb"), pos, explosionRadius, soundEffects["fuze"]);
             bombs.Add(newBomb);
+            
 
             // Subscribe to the OnExplode event
             newBomb.OnExplode += players[i].IncreaseBombCount;
@@ -392,7 +357,7 @@ namespace BomberManClone
                     randomPUText = explosionRadiusPUText;
                     break;
             }
-            PowerUp newPowerUp = new PowerUp(randomPUText, pos, (PowerUpType) randomPowerup, PUspawnSfx);
+            PowerUp newPowerUp = new PowerUp(randomPUText, pos, (PowerUpType) randomPowerup, soundEffects["powerupSpawn"]);
             powerUps.Add(newPowerUp);
         }
         public void ChangeState(GameState state)
@@ -450,12 +415,12 @@ namespace BomberManClone
             // close game
             if (kb_curr.IsKeyDown(Keys.Escape))
                 this.Exit();
-            // Test for player reset method //////////////////////////
-            for (int i = 0; i < numberOfPlayers; i++)
-            {
-                if (kb_curr.IsKeyDown(Keys.Up))
-                    players[i].Reset();
-            }
+            // Test for player reset method
+            //for (int i = 0; i < numberOfPlayers; i++)
+            //{
+            //    if (kb_curr.IsKeyDown(Keys.Up))
+            //        players[i].Reset();
+            //}
 
                 base.Update(gt);
             kb_old = kb_curr;
@@ -522,6 +487,38 @@ namespace BomberManClone
             //}
 
         }
+        void PlayerPowerupInteraction()
+        {
+            for (int i = 0; i < numberOfPlayers; i++)                                   // loop through the players
+            {
+                if (currentMap.IsPowerUpOnCell(players[i].Position.ToPoint()))          // if they are standing on a powerup
+                {
+                    if (players[i].State == PlayerState.InPlay)                           // if the player is in play
+                    {
+                        for (int j = 0; j < powerUps.Count; j++)                        // loop through the powerups
+                        {
+                            if (powerUps[j].Position == players[i].Position.ToPoint())  // check which powerup the player is standing on
+                            {
+                                soundEffects["maximise"].Play();
+                                switch (powerUps[j].Type)                               // act accordingly
+                                {
+                                    case PowerUpType.Speed:
+                                        players[i].SpeedPowerUp();
+                                        break;
+                                    case PowerUpType.MoreBombs:
+                                        players[i].MoreBombsPowerUp();
+                                        break;
+                                    case PowerUpType.ExplosionRadius:
+                                        players[i].ExplosionRadiusPowerUp();
+                                        break;
+                                }
+                                powerUps.RemoveAt(j);                                   // remove the powerup
+                            }
+                        }
+                    }
+                }
+            }
+        }
         void InPlayUpdate(GameTime gt)
         {
 
@@ -581,36 +578,37 @@ namespace BomberManClone
                     powerUps.RemoveAt(i);
             }
 
-            //////////////////// Player - PowerUps Interraction //////////////////// 
-            for (int i = 0; i < numberOfPlayers; i++)                                   // loop through the players
-            {
-                if (currentMap.IsPowerUpOnCell(players[i].Position.ToPoint()))          // if they are standing on a powerup
-                {
-                    if (players[i].State==PlayerState.InPlay)                           // if the player is in play
-                    {
-                        for (int j = 0; j < powerUps.Count; j++)                        // loop through the powerups
-                        {
-                            if (powerUps[j].Position == players[i].Position.ToPoint())  // check which powerup the player is standing on
-                            {
-                                maximiseSfx.Play();
-                                switch (powerUps[j].Type)                               // act accordingly
-                                {
-                                    case PowerUpType.Speed:
-                                        players[i].SpeedPowerUp();
-                                        break;
-                                    case PowerUpType.MoreBombs:
-                                        players[i].MoreBombsPowerUp();
-                                        break;
-                                    case PowerUpType.ExplosionRadius:
-                                        players[i].ExplosionRadiusPowerUp();
-                                        break;
-                                }
-                                powerUps.RemoveAt(j);                                   // remove the powerup
-                            }
-                        }
-                    }
-                }
-            }
+            //////////////////// Player - PowerUps Interraction ////////////////////
+            PlayerPowerupInteraction();
+            //for (int i = 0; i < numberOfPlayers; i++)                                   // loop through the players
+            //{
+            //    if (currentMap.IsPowerUpOnCell(players[i].Position.ToPoint()))          // if they are standing on a powerup
+            //    {
+            //        if (players[i].State==PlayerState.InPlay)                           // if the player is in play
+            //        {
+            //            for (int j = 0; j < powerUps.Count; j++)                        // loop through the powerups
+            //            {
+            //                if (powerUps[j].Position == players[i].Position.ToPoint())  // check which powerup the player is standing on
+            //                {
+            //                    maximiseSfx.Play();
+            //                    switch (powerUps[j].Type)                               // act accordingly
+            //                    {
+            //                        case PowerUpType.Speed:
+            //                            players[i].SpeedPowerUp();
+            //                            break;
+            //                        case PowerUpType.MoreBombs:
+            //                            players[i].MoreBombsPowerUp();
+            //                            break;
+            //                        case PowerUpType.ExplosionRadius:
+            //                            players[i].ExplosionRadiusPowerUp();
+            //                            break;
+            //                    }
+            //                    powerUps.RemoveAt(j);                                   // remove the powerup
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
 
 
 
@@ -654,7 +652,7 @@ namespace BomberManClone
             // Map
             currentMap.DrawMe(_spriteBatch, tiles);
             // screen tint
-            gameOverScreenTint.DrawMeAsRect(_spriteBatch, new Rectangle(0, 0, screenWidth, screenHeight), Color.White * .75f);
+            gameOverScreenTint.DrawMeAsRect(_spriteBatch, new Rectangle(0, 0, Globals.ScreenWidth, Globals.ScreenHeight), Color.White * .75f);
 
             // Buttons
 
@@ -675,9 +673,9 @@ namespace BomberManClone
             //Text
             Rectangle tempRect;
             Vector2 textlength = UIfont.MeasureString("Select Number Of Players, Then Press Start");
-            tempRect = new Rectangle(startButtonPos.X - 210, startButtonPos.Y - 210, (int)textlength.X+20, (int)textlength.Y+20);
+            tempRect = new Rectangle(Globals.ButtonPositions["startButton"].X - 210, Globals.ButtonPositions["startButton"].Y - 210, (int)textlength.X+20, (int)textlength.Y+20);
             gameOverScreenTint.DrawMeAsRect(_spriteBatch, tempRect, Color.Black * .75f);
-            _spriteBatch.DrawString(UIfont, "Select Number Of Players, Then Press Start", new Vector2(startButtonPos.X-200, startButtonPos.Y-200), Color.White);
+            _spriteBatch.DrawString(UIfont, "Select Number Of Players, Then Press Start", new Vector2(Globals.ButtonPositions["startButton"].X - 200, Globals.ButtonPositions["startButton"].Y-200), Color.White);
             
             // Buttons
             foreach (var buttonName in Globals.StartScreenButtons)
@@ -733,7 +731,7 @@ namespace BomberManClone
             currentMap.DrawMe(_spriteBatch, tiles);
 
             // screen tint
-            gameOverScreenTint.DrawMeAsRect(_spriteBatch, new Rectangle(0,0,screenWidth,screenHeight), Color.White*.75f);
+            gameOverScreenTint.DrawMeAsRect(_spriteBatch, new Rectangle(0, 0, Globals.ScreenWidth, Globals.ScreenHeight), Color.White * .75f);
 
             for (int i = 0; i < numberOfPlayers; i++)
             {
@@ -752,7 +750,7 @@ namespace BomberManClone
             {
                 Vector2 textlength = bigUIfont.MeasureString("TIED");
 
-                _spriteBatch.DrawString(bigUIfont, "TIED", new Vector2(screenCentre.X - textlength.X / 2, screenCentre.Y - 200), Color.Black);
+                _spriteBatch.DrawString(bigUIfont, "TIED", new Vector2(Globals.screenCentre.X - textlength.X / 2, Globals.screenCentre.Y - 200), Color.Black);
             }
             // else if there is a clear winner
             else
@@ -762,7 +760,7 @@ namespace BomberManClone
                     if (players[i].State != PlayerState.Dead)
                     {
                         Vector2 textlength = bigUIfont.MeasureString("PLAYER " + (i + 1) + " WINS");
-                        _spriteBatch.DrawString(bigUIfont, "PLAYER " + (i + 1) + " WINS", new Vector2(screenCentre.X - textlength.X / 2, screenCentre.Y - 200), Color.Black);
+                        _spriteBatch.DrawString(bigUIfont, "PLAYER " + (i + 1) + " WINS", new Vector2(Globals.screenCentre.X - textlength.X / 2, Globals.screenCentre.Y - 200), Color.Black);
                     }
                 }
             }

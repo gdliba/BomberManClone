@@ -1,10 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace BomberManClone
 {
+    /// <summary>
+    /// "Cell" is used in the "Map" class so that each individual tile can
+    /// learn to have a "type" and "duration".
+    /// This helps in more complex logic, such as propagating explosions
+    /// and setting a tile to a specific type for a certain duration,
+    /// before changing to another type.
+    /// </summary>
     class Cell
     {
         public int Type { get; set; }
@@ -16,6 +22,11 @@ namespace BomberManClone
             Duration = duration;
         }
     }
+    /// <summary>
+    /// This class takes in the 2D array given in Game1 describing the
+    /// level layout("floorplan"). Esensially all interactions in this
+    /// game use a method related to the Map class.
+    /// </summary>
     class Map
     {
         private Cell[,] m_Cells;
@@ -25,7 +36,11 @@ namespace BomberManClone
         float m_explosionDuration;
         float m_occupiedCellDuration;
         float m_powerUpCellDuration;
-
+        /// <summary>
+        /// This method takes in the "floorplan" from Game1.
+        /// It derives their position from the 2D array provided.
+        /// </summary>
+        /// <param name="floorplan"></param>
         public Map(int[,] floorplan)
         {
             m_width = floorplan.GetLength(0);
@@ -37,38 +52,63 @@ namespace BomberManClone
                 {
                     m_Cells[x, y] = new Cell(floorplan[y, x]);
                 }
+            // setting familiar values
             m_explosionDuration = 2f;
             m_occupiedCellDuration = .03f;
             m_powerUpCellDuration = 10f;
         }
+        /// <summary>
+        /// Update method for the map class.
+        /// this logic looks through all cells.
+        /// </summary>
+        /// <param name="gt"></param>
         public void Update(GameTime gt)
         {
+            // loop through all cells
             for (int x = 0; x < m_width; x++)
                 for (int y = 0; y < m_height; y++)
                 {
                     if (m_Cells[x, y].Duration != -1)
                     {
+                        // if their duration is greater than 0
                         if(m_Cells[x, y].Duration > 0)
                         {
+                            // count down
                             m_Cells[x, y].Duration -=(float)gt.ElapsedGameTime.TotalSeconds;
+                            // eventually you will hit 0
                         }
                         else
                         {
+                            // else change the duration to -1 and type to 1 (cell.type = 1 corresponds to the floor tyle,
+                            // which is walkable for the players)
                             m_Cells[x, y].Duration = -1;
                             m_Cells[x, y].Type = 1;
                         }
                     }
                 }
         }
+        /// <summary>
+        /// Declare that THIS cell has a crate on it
+        /// </summary>
+        /// <param name="idx"></param>
         public void CrateOccupyingCell(Point idx)
         {
             m_Cells[idx.X, idx.Y].Type = 9;
         }
+        /// <summary>
+        /// Declare that THIS cell has a powerup on it
+        /// </summary>
+        /// <param name="idx"></param>
         public void PowerUpOnCell(Point idx)
         {
             m_Cells[idx.X, idx.Y].Type = 10;
             m_Cells[idx.X, idx.Y].Duration = m_powerUpCellDuration;
         }
+        /// <summary>
+        /// Check if there is a powerup on THIS cell
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <returns></returns>
         public bool IsPowerUpOnCell(Point idx)
         {
             if (m_Cells[idx.X, idx.Y].Type == 10) 
@@ -76,6 +116,11 @@ namespace BomberManClone
             else 
                 return false;
         }
+        /// <summary>
+        /// Check if the cell "idx" is walkable for the player
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <returns></returns>
         public bool IsWalkableForPlayer(Point idx)
         {
             switch (m_Cells[idx.X, idx.Y].Type)
@@ -89,17 +134,28 @@ namespace BomberManClone
                     return false;
             }
         }
+        /// <summary>
+        /// Check if the cell "idx" is a safe cell for the player to respawn on
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <returns></returns>
         public bool IsCellSafe(Point idx)
         {
             switch (m_Cells[idx.X, idx.Y].Type)
             {
                 case 1:
                 case 10:
+                case 12:
                     return true;
                 default:
                     return false;
             }
         }
+        /// <summary>
+        /// Check if the player in Ghost State can walk on THIS cell
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <returns></returns>
         public bool IsWalkableForGhost(Point idx)
         {
             switch (m_Cells[idx.X, idx.Y].Type)
@@ -112,10 +168,19 @@ namespace BomberManClone
                     return true;
             }
         }
+        /// <summary>
+        /// Declare that THIS cell contains a bomb
+        /// </summary>
+        /// <param name="idx"></param>
         public void SetCellToBomb(Point idx)
         {
             m_Cells[idx.X, idx.Y].Type = 0;
         }
+        /// <summary>
+        /// Check if there is a bomb on THIS cell
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <returns></returns>
         public bool IsCellBomb(Point idx)
         {
             if(m_Cells[idx.X, idx.Y].Type == 0)
@@ -123,24 +188,51 @@ namespace BomberManClone
              
             return false;
         }
+        /// <summary>
+        /// Check if THIS cell is exploading.
+        /// Useful to teach the player to take a hit if they are on an exploading cell.
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <returns></returns>
         public bool IsCellExploding(Point idx)
         {
             if (m_Cells[idx.X, idx.Y].Type == 7)
                 return true;
             return false;
         }
+        /// <summary>
+        /// Check if the crate on THIS cell has just been hit by an explosion.
+        /// If it has, it should be "breaking".
+        /// When this happens return "true".
+        /// This will teach the crate that is is breaking.
+        /// Thus it should try to spawn a powerup.
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <returns></returns>
         public bool IsCrateBreaking(Point idx)
         {
             if (m_Cells[idx.X, idx.Y].Type == 13 || m_Cells[idx.X, idx.Y].Type == 7)
                 return true;
             return false;
         }
+        /// <summary>
+        /// Declare that the player is on THIS cell.
+        /// Useful because the cell type is changed, meaning other players
+        /// cannot walk on THIS cell.
+        /// </summary>
+        /// <param name="idx"></param>
         public void PlayerIsOccupyingCell(Point idx)
         {
             m_Cells[idx.X, idx.Y].Type = 14;
             m_Cells[idx.X, idx.Y].Duration = m_occupiedCellDuration;
         }
-        public void RegularBombExplosion(Point idx, GameTime gt, int explosionRange)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <param name="gt"></param>
+        /// <param name="explosionRange"></param>
+        public void BombExplosion(Point idx, GameTime gt, int explosionRange)
         {
             PropagateExplosion(new Point(1, 0));
             PropagateExplosion(new Point(-1, 0));
@@ -172,7 +264,7 @@ namespace BomberManClone
                         break;
 
                     m_Cells[newX, newY].Type = 7;
-                    m_Cells[newX, newY].Duration = m_explosionDuration+i*.1f;
+                    m_Cells[newX, newY].Duration = m_explosionDuration + i * .1f;
 
 
                 }

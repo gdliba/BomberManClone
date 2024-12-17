@@ -69,7 +69,7 @@ namespace BomberManClone
         public void Explode(Map currentMap, GameTime gt)
         {
             m_fuzeInstance.Stop();
-            currentMap.RegularBombExplosion(m_position,gt,m_explosionRadius);
+            currentMap.BombExplosion(m_position,gt,m_explosionRadius);
             m_state = BombStates.Dead;
 
             // Notify that the bomb exploded and increment the player's bomb count
