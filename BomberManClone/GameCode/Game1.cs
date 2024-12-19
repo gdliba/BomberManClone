@@ -615,10 +615,13 @@ namespace BomberManClone
 
             // Text
             Rectangle tempRect;
-            Vector2 textlength = UIfont.MeasureString("Select Number Of Players, Then Press Start");
+            Vector2 textlength = UIfont.MeasureString("Select Number Of Players, Then Press Start.\nPlayers must use the Dpad to move and X to place Bombs." +
+                "\nWhen a player is hit, they become a ghost.\nWhen in Ghost state, press X to respawn.");
             tempRect = new Rectangle(Globals.ButtonPositions["startButton"].X - 210, Globals.ButtonPositions["startButton"].Y - 210, (int)textlength.X+20, (int)textlength.Y+20);
             gameOverScreenTint.DrawMeAsRect(_spriteBatch, tempRect, Color.Black * .75f);
-            _spriteBatch.DrawString(UIfont, "Select Number Of Players, Then Press Start", new Vector2(Globals.ButtonPositions["startButton"].X - 200, Globals.ButtonPositions["startButton"].Y-200), Color.White);
+            _spriteBatch.DrawString(UIfont, 
+                "Select Number Of Players, Then Press Start.\nPlayers must use the Dpad to move and X to place Bombs." +
+                "\nWhen a player is hit, they become a ghost.\nWhen in Ghost state, press X to respawn.", new Vector2(Globals.ButtonPositions["startButton"].X - 200, Globals.ButtonPositions["startButton"].Y-200), Color.White);
             
             // Buttons
             foreach (var buttonName in Globals.StartScreenButtons)
