@@ -185,7 +185,6 @@ namespace BomberManClone
         {
             if(m_Cells[idx.X, idx.Y].Type == 0)
                 return true;
-             
             return false;
         }
         /// <summary>
@@ -272,8 +271,6 @@ namespace BomberManClone
                     // Declare the duration THIS cell will remain type 7 for.
                     // In this case the logic makes it so the explosion fades (turns back to type 1) from the centre outward.
                     m_Cells[newX, newY].Duration = m_explosionDuration + i * .1f;
-
-
                 }
             }
 

@@ -31,7 +31,7 @@ namespace BomberManClone
 
         // Tiles/Map
         List<Texture2D> tiles;
-        int[,] testfloor, finishedLevel;
+        int[,] finishedLevel;
         Map currentMap;
 
         // Keyboard
@@ -53,7 +53,6 @@ namespace BomberManClone
 
         // Crates
         List<Crate> crates;
-        List<Point> crateSpawnPoints;
 
         // GameState
         GameState currentGameState;
@@ -79,7 +78,6 @@ namespace BomberManClone
 
         // Timers and Countdowns
         float gameOverCounter, gameOverCounterReset;
-
         #endregion
 
         public Game1()
@@ -92,7 +90,6 @@ namespace BomberManClone
             Window.Title = "Supermarket Reloaded";
             Globals.ChangeResolution(1088, 1088);
         }
-
         protected override void Initialize()
         {
             #region List and Dictionary Intitialisations
@@ -101,7 +98,6 @@ namespace BomberManClone
             bombs = new List<Bomb>();
             powerUps = new List<PowerUp>();
             crates = new List<Crate>();
-            crateSpawnPoints = new List<Point>();
             soundEffects = new Dictionary<string, SoundEffect>();
             buttons = new Dictionary<string, Button>();
             healthDisplay = new List<HealthUI>();
@@ -120,7 +116,6 @@ namespace BomberManClone
             Globals.Initialise();
             base.Initialize();
         }
-
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -335,12 +330,10 @@ namespace BomberManClone
         public void ChangeState(GameState state)
         {
             crates.Clear();
-            
             currentGameState = state;
             currentMap = new Map(finishedLevel);
             if (state == GameState.InPlay)
                 currentMap.SpawnCrates(Content.Load<Texture2D>("Objects\\crate_01"), crates);
-
         }
         /// <summary>
         /// Restart method for the game. This way the game can be replayed
@@ -406,7 +399,6 @@ namespace BomberManClone
             //        players[i].Reset();
             //}
 
-            base.Update(gt);
             kb_old = kb_curr;
             oldMouse = currMouse;
             // set the old gamepadstate to the current one
@@ -414,6 +406,7 @@ namespace BomberManClone
             {
                 oldGamePadStates[i] = gamePadStates[i];
             }
+            base.Update(gt);
         }
         /// <summary>
         /// Main draw method. In charge of all draws.
@@ -616,12 +609,17 @@ namespace BomberManClone
             // Text
             Rectangle tempRect;
             Vector2 textlength = UIfont.MeasureString("Select Number Of Players, Then Press Start.\nPlayers must use the Dpad to move and X to place Bombs." +
-                "\nWhen a player is hit, they become a ghost.\nWhen in Ghost state, press X to respawn.");
+                "\nWhen a player is hit, they become a ghost.\nWhen in Ghost state, press X to respawn." + "\nBreak crates using the bombs to find Poweups." +
+                "\nBlue ones Increase Speed, Orange Increase Explosion Radius" +
+                "\nand Grey Increase the number of bombs you can place at a time.");
             tempRect = new Rectangle(Globals.ButtonPositions["startButton"].X - 210, Globals.ButtonPositions["startButton"].Y - 210, (int)textlength.X+20, (int)textlength.Y+20);
             gameOverScreenTint.DrawMeAsRect(_spriteBatch, tempRect, Color.Black * .75f);
             _spriteBatch.DrawString(UIfont, 
                 "Select Number Of Players, Then Press Start.\nPlayers must use the Dpad to move and X to place Bombs." +
-                "\nWhen a player is hit, they become a ghost.\nWhen in Ghost state, press X to respawn.", new Vector2(Globals.ButtonPositions["startButton"].X - 200, Globals.ButtonPositions["startButton"].Y-200), Color.White);
+                "\nWhen a player is hit, they become a ghost.\nWhen in Ghost state, press X to respawn." +
+                "\nBreak crates using the bombs to find Poweups." +
+                "\nBlue ones Increase Speed, Orange Increase Explosion Radius" +
+                "\nand Grey Increase the number of bombs you can place at a time.", new Vector2(Globals.ButtonPositions["startButton"].X - 200, Globals.ButtonPositions["startButton"].Y-200), Color.White);
             
             // Buttons
             foreach (var buttonName in Globals.StartScreenButtons)

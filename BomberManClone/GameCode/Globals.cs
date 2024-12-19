@@ -90,7 +90,6 @@ namespace BomberManClone
         {
             "Restart",
             "Main Menu"
-
         };
     }
 }

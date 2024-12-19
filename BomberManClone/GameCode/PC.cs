@@ -31,7 +31,6 @@ namespace BomberManClone
         private SoundEffect m_footstepSfx;
         private SoundEffect m_deathSfx;
 
-
         public int ExplosionRadius { get { return m_explosionRadius; } }
         public int Health { get {return m_health; } }
         public Vector2 Position { get { return m_position; } }
@@ -126,8 +125,6 @@ namespace BomberManClone
                 m_footstepTimer = (.008f/m_movementSpeed); // Reset timer based on speed
             }
             m_footstepTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-
 
             // Declare that you are occupying the cell so that other players cannot walk into you
             currentMap.PlayerIsOccupyingCell(m_position.ToPoint());
