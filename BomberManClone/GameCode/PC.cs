@@ -503,25 +503,28 @@ namespace BomberManClone
              m_numberOfBombs++;
         }
         /// <summary>
-        ///  Same idea as previous method
+        ///  Also a method that helps with encapsulation.
+        ///  This one and the following 3 are called when the
+        ///  relevant powerups are picked up.
         /// </summary>
         public void SpeedPowerUp()
         {
-            m_movementSpeed = .08f;
+            if (m_movementSpeed < .1f)
+                m_movementSpeed += .02f;
         }
         /// <summary>
         ///  Same idea as previous method
         /// </summary>
         public void MoreBombsPowerUp()
         {
-            m_numberOfBombs = 3;
+            m_numberOfBombs ++;
         }
         /// <summary>
         ///  Same idea as previous method
         /// </summary>
         public void ExplosionRadiusPowerUp()
         {
-            m_explosionRadius = 4;
+            m_explosionRadius ++;
         }
         /// <summary>
         /// Reset Method changes all relevant variables back to the starting ones in order to play

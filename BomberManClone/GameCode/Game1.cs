@@ -25,14 +25,13 @@ namespace BomberManClone
 #if DEBUG
         public static SpriteFont debugFont;
 #endif
-
         #region VARIABLES
         // Font
         SpriteFont UIfont, bigUIfont;
 
         // Tiles/Map
         List<Texture2D> tiles;
-        int[,] testfloor, testfloor2, finishedLevel;
+        int[,] testfloor, finishedLevel;
         Map currentMap;
 
         // Keyboard
@@ -51,7 +50,6 @@ namespace BomberManClone
 
         // PowerUps
         List<PowerUp> powerUps;
-        Texture2D speedPUText, extraBombPUText, explosionRadiusPUText, randomPUText; 
 
         // Crates
         List<Crate> crates;
@@ -84,8 +82,6 @@ namespace BomberManClone
 
         #endregion
 
-
-
         public Game1()
         {
             Globals.Graphics = _graphics = new GraphicsDeviceManager(this);
@@ -99,34 +95,29 @@ namespace BomberManClone
 
         protected override void Initialize()
         {
+            #region List and Dictionary Intitialisations
             // List initialisations
             tiles = new List<Texture2D>();
             bombs = new List<Bomb>();
             powerUps = new List<PowerUp>();
             crates = new List<Crate>();
             crateSpawnPoints = new List<Point>();
-
             soundEffects = new Dictionary<string, SoundEffect>();
-
             buttons = new Dictionary<string, Button>();
-            //buttons = new List<Button>();
             healthDisplay = new List<HealthUI>();
             gamePadStates = new List<GamePadState>();
             oldGamePadStates = new List<GamePadState>();
             players = new List<PC>();
-
+            #endregion
             // GameState
             currentGameState = GameState.Start;
-
             //Number of Players
-            numberOfPlayers = 0;
-
+            numberOfPlayers = 2;
             // Timers and Countdowns
             gameOverCounter = 3;
             gameOverCounterReset = 3;
 
             Globals.Initialise();
-
             base.Initialize();
         }
 
@@ -141,11 +132,6 @@ namespace BomberManClone
 #endif
             UIfont = Content.Load<SpriteFont>("Fonts\\UIfont");
             bigUIfont = Content.Load<SpriteFont>("Fonts\\BigUIfont");
-
-            // PowerUps
-            speedPUText = Content.Load<Texture2D>("Objects\\powerup_01");
-            extraBombPUText = Content.Load<Texture2D>("Objects\\powerup_02");
-            explosionRadiusPUText = Content.Load<Texture2D>("Objects\\powerup_03");
 
             // Health UI
             healthTxr = Content.Load<Texture2D>("UI\\playerFace");
@@ -174,6 +160,7 @@ namespace BomberManClone
             var fuzeSfx = Content.Load<SoundEffect>("Sounds\\sizzle");
             soundEffects.Add("fuze", fuzeSfx);
             #endregion
+
             // Players
             toombstoneTxr = Content.Load<Texture2D>("Objects\\toombstone");
             playerTxr = Content.Load<Texture2D>("Characters\\player_spritesheetHighlighted");
@@ -219,7 +206,7 @@ namespace BomberManClone
                 {
                     players[i].Reset();
                 }
-                ChangeState(GameState.InPlay);
+                RestartGame();
             };
             buttons.Add("Restart", restartButton);
 
@@ -253,27 +240,29 @@ namespace BomberManClone
             tiles.Add(Content.Load<Texture2D>("Tiles\\ground_01"));     // 14
 
             // Tile Layout
-            testfloor = new int[17, 17]
-            {
-                { 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 6},
-                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
-                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
-                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
-                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
-                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
-                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
-                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
-                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
-                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
-                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
-                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
-                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1 ,2, 1, 4},
-                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 4},
-                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1 ,2, 1, 4},
-                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 4},
-                { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}
+            // This is an unused Map. I kept is as a template, as it is easier to use than
+            // the next one.
+            //testfloor = new int[17, 17]
+            //{
+            //    { 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 6},
+            //    { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
+            //    { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
+            //    { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
+            //    { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
+            //    { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
+            //    { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
+            //    { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
+            //    { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
+            //    { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
+            //    { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
+            //    { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
+            //    { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1 ,2, 1, 4},
+            //    { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 4},
+            //    { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1 ,2, 1, 4},
+            //    { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 4},
+            //    { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}
 
-            };
+            //};
             finishedLevel = new int[17, 17]
             {
                 {11, 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 6, 11},
@@ -295,29 +284,8 @@ namespace BomberManClone
                 {11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11}
                 
             };
-            testfloor2 = new int[15, 15]
-            {
-                { 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 6},
-                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
-                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
-                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
-                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
-                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
-                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
-                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
-                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
-                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
-                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 4},
-                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4},
-                { 3, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1 ,2, 1, 4},
-                { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 4},
-                { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}
-
-            };
-
             // Use this Map
             currentMap = new Map(finishedLevel);
-            //currentMap.SpawnCrates(Content.Load<Texture2D>("Objects\\crate_01"), crates);
         }
         public bool PlaceBomb(Point pos, GameTime gt, int explosionRadius, int i)
         {
@@ -344,20 +312,8 @@ namespace BomberManClone
         }
         public void SpawnPowerUp(Point pos, GameTime gt)
         {
-            var randomPowerup = RNG.Next(0, 3);
-            switch (randomPowerup)
-            {
-                case 0:
-                    randomPUText = speedPUText;
-                    break;
-                case 1:
-                    randomPUText = extraBombPUText;
-                    break;
-                case 2:
-                    randomPUText = explosionRadiusPUText;
-                    break;
-            }
-            PowerUp newPowerUp = new PowerUp(randomPUText, pos, (PowerUpType) randomPowerup, soundEffects["powerupSpawn"]);
+            var randomPowerup = RNG.Next((int) PowerUpType.Count);
+            PowerUp newPowerUp = new PowerUp(Content.Load<Texture2D>("Objects\\powerup_0" + (randomPowerup + 1)), pos, (PowerUpType) randomPowerup, soundEffects["powerupSpawn"]);
             powerUps.Add(newPowerUp);
         }
         public void ChangeState(GameState state)
@@ -372,6 +328,7 @@ namespace BomberManClone
         }
         public void RestartGame()
         {
+            ChangeState(GameState.InPlay);
             gameOverCounter = gameOverCounterReset;
             crates.Clear();
             powerUps.Clear();
