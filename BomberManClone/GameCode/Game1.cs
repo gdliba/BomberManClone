@@ -287,13 +287,20 @@ namespace BomberManClone
             // Use this Map
             currentMap = new Map(finishedLevel);
         }
+        /// <summary>
+        /// Method in charge of placing a bomg when the player is allowed to.
+        /// The method is also used to let the player know that the bomb they placed has exploaded
+        /// and that they can now place another.
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="gt"></param>
+        /// <param name="explosionRadius"></param>
+        /// <param name="i"></param>
+        /// <returns></returns>
         public bool PlaceBomb(Point pos, GameTime gt, int explosionRadius, int i)
         {
-            
-                
             var newBomb = new Bomb(Content.Load<Texture2D>("Objects\\sodaBomb"), pos, explosionRadius, soundEffects["fuze"]);
             bombs.Add(newBomb);
-            
 
             // Subscribe to the OnExplode event
             newBomb.OnExplode += players[i].IncreaseBombCount;
@@ -310,12 +317,21 @@ namespace BomberManClone
             }
             return false;
         }
+        /// <summary>
+        /// Method in charge of spawning the powerups.
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="gt"></param>
         public void SpawnPowerUp(Point pos, GameTime gt)
         {
             var randomPowerup = RNG.Next((int) PowerUpType.Count);
             PowerUp newPowerUp = new PowerUp(Content.Load<Texture2D>("Objects\\powerup_0" + (randomPowerup + 1)), pos, (PowerUpType) randomPowerup, soundEffects["powerupSpawn"]);
             powerUps.Add(newPowerUp);
         }
+        /// <summary>
+        /// Modular way of changing GameState.
+        /// </summary>
+        /// <param name="state"></param>
         public void ChangeState(GameState state)
         {
             crates.Clear();
@@ -326,6 +342,10 @@ namespace BomberManClone
                 currentMap.SpawnCrates(Content.Load<Texture2D>("Objects\\crate_01"), crates);
 
         }
+        /// <summary>
+        /// Restart method for the game. This way the game can be replayed
+        /// without needing to close it and reopen it again.
+        /// </summary>
         public void RestartGame()
         {
             ChangeState(GameState.InPlay);
@@ -336,12 +356,17 @@ namespace BomberManClone
             currentMap = new Map(finishedLevel);
             currentMap.SpawnCrates(Content.Load<Texture2D>("Objects\\crate_01"), crates);
         }
-
+        /// <summary>
+        /// Main update method.
+        /// Updates all relevant states and switches to its own relevant states
+        /// depending on GameState.
+        /// </summary>
+        /// <param name="gt"></param>
         protected override void Update(GameTime gt)
         {
+            // Assign the gamePadStates to the players
             for (int i = 0; i < gamePadStates.Count; i++)
             {
-
                 gamePadStates[i] = GamePad.GetState((PlayerIndex) i);
             }
 
@@ -351,8 +376,9 @@ namespace BomberManClone
                 healthDisplay[i].UpdateMe(players[i].Health);
             }
 
+            // Trak keyboard inputs
             kb_curr = Keyboard.GetState();
-            //Track Mouse Position
+            // Track Mouse Position
             mousepos = Mouse.GetState().Position;
             currMouse = Mouse.GetState();
 
@@ -370,8 +396,9 @@ namespace BomberManClone
             }
 
             // close game
-            if (kb_curr.IsKeyDown(Keys.Escape))
-                this.Exit();
+            //if (kb_curr.IsKeyDown(Keys.Escape))
+            //    this.Exit();
+
             // Test for player reset method
             //for (int i = 0; i < numberOfPlayers; i++)
             //{
@@ -379,7 +406,7 @@ namespace BomberManClone
             //        players[i].Reset();
             //}
 
-                base.Update(gt);
+            base.Update(gt);
             kb_old = kb_curr;
             oldMouse = currMouse;
             // set the old gamepadstate to the current one
@@ -388,11 +415,16 @@ namespace BomberManClone
                 oldGamePadStates[i] = gamePadStates[i];
             }
         }
+        /// <summary>
+        /// Main draw method. In charge of all draws.
+        /// Switches between its own draw methods depending on GameState.
+        /// Scales screen to the render target.
+        /// </summary>
+        /// <param name="gt"></param>
         protected override void Draw(GameTime gt)
         {
             // Applying scale effect to the screen
             GraphicsDevice.SetRenderTarget(_renderTarget);
-
 
             GraphicsDevice.Clear(Color.Tan);
 
@@ -422,28 +454,21 @@ namespace BomberManClone
             base.Draw(gt);
         }
         #region STATE UPDATES
+        /// <summary>
+        /// Start Screen update method
+        /// </summary>
         void StartUpdate()
         {
             // Update Buttons
-
             foreach (var buttonName in Globals.StartScreenButtons)
             {
                 buttons[buttonName].UpdateMe(mousepos, currMouse, oldMouse);
             }
-            
-            //for (int i = 0; i < buttons.Count; i++)
-            //{
-            //    buttons[i].UpdateMe(mousepos, currMouse, oldMouse); // Start Button
-
-            //    //buttons[0].UpdateMe(mousepos, currMouse, oldMouse); // Start Button
-            //    ////buttons[0].OnClick += () => ChangeStateToPlay();
-            //    ////buttons[0].OnClick += (_, _) => ChangeState(GameState.InPlay);
-            //    //buttons[0].OnClick += delegate { ChangeState(GameState.InPlay); };
-            //    //buttons[1].UpdateMe(mousepos, currMouse, oldMouse); // Exit Button
-            //    //buttons[1].OnClick += () => Exit();
-            //}
-
         }
+        /// <summary>
+        /// Method in charge of the Player - Powerup Interaction.
+        /// It is it's own method for organisational purposes.
+        /// </summary>
         void PlayerPowerupInteraction()
         {
             for (int i = 0; i < numberOfPlayers; i++)                                   // loop through the players
@@ -476,14 +501,14 @@ namespace BomberManClone
                 }
             }
         }
+        /// <summary>
+        /// Update Method for "In Play" GameState.
+        /// </summary>
+        /// <param name="gt"></param>
         void InPlayUpdate(GameTime gt)
         {
-
-            if (kb_curr.IsKeyDown(Keys.Down))
-                players[0].TakeAHit(currentMap);
-
                 // GAME OVER CONDITION
-                int livingPlayers = 0;
+            int livingPlayers = 0;
             for (int i = 0; i < players.Count; i++)
             {
                 if (players[i].State != PlayerState.Dead)
@@ -535,39 +560,8 @@ namespace BomberManClone
                     powerUps.RemoveAt(i);
             }
 
-            //////////////////// Player - PowerUps Interraction ////////////////////
+            // Player - PowerUps Interraction 
             PlayerPowerupInteraction();
-            //for (int i = 0; i < numberOfPlayers; i++)                                   // loop through the players
-            //{
-            //    if (currentMap.IsPowerUpOnCell(players[i].Position.ToPoint()))          // if they are standing on a powerup
-            //    {
-            //        if (players[i].State==PlayerState.InPlay)                           // if the player is in play
-            //        {
-            //            for (int j = 0; j < powerUps.Count; j++)                        // loop through the powerups
-            //            {
-            //                if (powerUps[j].Position == players[i].Position.ToPoint())  // check which powerup the player is standing on
-            //                {
-            //                    maximiseSfx.Play();
-            //                    switch (powerUps[j].Type)                               // act accordingly
-            //                    {
-            //                        case PowerUpType.Speed:
-            //                            players[i].SpeedPowerUp();
-            //                            break;
-            //                        case PowerUpType.MoreBombs:
-            //                            players[i].MoreBombsPowerUp();
-            //                            break;
-            //                        case PowerUpType.ExplosionRadius:
-            //                            players[i].ExplosionRadiusPowerUp();
-            //                            break;
-            //                    }
-            //                    powerUps.RemoveAt(j);                                   // remove the powerup
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-
-
 
             // Crates
             for (int i = 0; i < crates.Count; i++)
@@ -583,6 +577,10 @@ namespace BomberManClone
             }
             #endregion
         }
+        /// <summary>
+        /// Method in charge of the "GameOver" GameState.
+        /// </summary>
+        /// <param name="gt"></param>
         void GameOverUpdate(GameTime gt)
         {
             // Map/Tiles
@@ -604,30 +602,18 @@ namespace BomberManClone
         }
         #endregion
         #region STATE DRAWS
+        /// <summary>
+        /// Draw Method for Start Screen.
+        /// </summary>
+        /// <param name="gt"></param>
         void StartDraw(GameTime gt)
         {
             // Map
             currentMap.DrawMe(_spriteBatch, tiles);
-            // screen tint
+            // Screen tint
             gameOverScreenTint.DrawMeAsRect(_spriteBatch, new Rectangle(0, 0, Globals.ScreenWidth, Globals.ScreenHeight), Color.White * .75f);
 
-            // Buttons
-
-            //for (int i = 0; i < buttons.Count; i++)
-            //{
-            //    buttons[0].DrawMe(_spriteBatch, "Start", debugFont);
-            //    buttons[1].DrawMe(_spriteBatch, "Exit", debugFont);
-            //    buttons[2].DrawMe(_spriteBatch, "2 Players", debugFont);
-            //    buttons[3].DrawMe(_spriteBatch, "3 Players", debugFont);
-            //    buttons[4].DrawMe(_spriteBatch, "4 Players", debugFont);
-            //}
-
-            //foreach (var button in buttons)
-            //{
-            //    button.Value.DrawMe(_spriteBatch);
-            //}
-
-            //Text
+            // Text
             Rectangle tempRect;
             Vector2 textlength = UIfont.MeasureString("Select Number Of Players, Then Press Start");
             tempRect = new Rectangle(Globals.ButtonPositions["startButton"].X - 210, Globals.ButtonPositions["startButton"].Y - 210, (int)textlength.X+20, (int)textlength.Y+20);
@@ -639,8 +625,11 @@ namespace BomberManClone
             {
                 buttons[buttonName].DrawMe(_spriteBatch);
             }
-
         }
+        /// <summary>
+        /// Draw Method for "InPlay" GameState.
+        /// </summary>
+        /// <param name="gt"></param>
         void InPlayDraw(GameTime gt)
         {
             // Map
@@ -682,6 +671,10 @@ namespace BomberManClone
 #endif
            
         }
+        /// <summary>
+        /// Draw Method for "GameOver" GameState.
+        /// </summary>
+        /// <param name="gt"></param>
         void GameOverDraw(GameTime gt)
         {
             // Map

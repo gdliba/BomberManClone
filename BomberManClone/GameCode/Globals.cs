@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace BomberManClone
 {
+    /// <summary>
+    /// This class is here for organisational purposes.
+    /// It is a convenient way to store a large amount of variables, keeping Game1 more organised.
+    /// </summary>
     public static class Globals
     {
         public static GraphicsDeviceManager Graphics;
@@ -13,7 +17,13 @@ namespace BomberManClone
         public static readonly float CrateSpawnChance = .5f;
         public static List<Point> HealthDisplayPoints;
         public static Dictionary<string, Point> ButtonPositions;
-
+        /// <summary>
+        /// Some variables in this class use the screen resolution to calculate points,
+        /// This method ensures that those measurements remain relevant if the resolution
+        /// were to change at any point.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         public static void ChangeResolution(int width, int height)
         {
             Graphics.PreferredBackBufferWidth = width;
@@ -21,7 +31,10 @@ namespace BomberManClone
             Graphics.ApplyChanges();
         }
 
-
+        /// <summary>
+        /// This initialise method needs to be called so that it can update the 
+        /// values relevant to the screen resolution.
+        /// </summary>
         public static void Initialise()
         {
             HealthDisplayPoints = new List<Point>()
@@ -42,12 +55,16 @@ namespace BomberManClone
 
             };
         }
-
+        /// <summary>
+        /// A collection of points the players can spawn on.
+        /// </summary>
         public static readonly List<Point> PlayerSpawnPoints = new List<Point>()
         {
             new Point(2,1), new Point(14,13), new Point(14,1), new Point(2,13)
         };
-
+        /// <summary>
+        /// A collection of tints applied to the players to visually distinguish them.
+        /// </summary>
         public static readonly List<Color> PlayerTints = new List<Color>()
         {
             Color.White,
@@ -55,7 +72,9 @@ namespace BomberManClone
             Color.LightSkyBlue,
             Color.Pink
         };
-
+        /// <summary>
+        /// A collection of strings referencing which buttons are to appear in the "Start" Screen.
+        /// </summary>
         public static readonly List<string> StartScreenButtons = new List<string>()
         {
             "Start",
@@ -64,7 +83,9 @@ namespace BomberManClone
             "3 Players",
             "4 Players"
         };
-
+        /// <summary>
+        /// A collection of strings referencing which buttons are to appear in the "GameOver" Screen.
+        /// </summary>
         public static readonly List<string> GameOverScreenButtons = new List<string>()
         {
             "Restart",

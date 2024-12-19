@@ -514,6 +514,10 @@ namespace BomberManClone
         }
         /// <summary>
         ///  Same idea as previous method
+        ///  Yes, this could be considered a redundant method, due to the 
+        ///  fact that "IncreaseBombCount" does exactly the same thing - However
+        ///  I kept them separate for organisational purposes, as the two methods
+        ///  are called for different reasons.
         /// </summary>
         public void MoreBombsPowerUp()
         {
