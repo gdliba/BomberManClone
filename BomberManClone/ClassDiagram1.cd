@@ -1,16 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Comment CommentText="RNG is public as a lot of classes have components which require access to randomness.">
+    <Position X="15.25" Y="6.75" Height="0.926" Width="1.7" />
+  </Comment>
+  <Comment CommentText="The &quot;Globals&quot; class is an abstract class mainly here for organisational purposes. All variables are public, because the point of this class is to collect data that might be tweaked for a multitude of reasons.&#xD;&#xA;	Facilitation of Game Balancing:&#xD;&#xA;Some data is game-balance related, thus they might need to be tweaked to allow for finer tuned/more tailored game experience. &#xD;&#xA;	UI Flexibility:&#xD;&#xA;Other variables are UI element positions, which might need to be moved around for clarity of a future re-design. &#xD;&#xA;	Management of Dictionaries:&#xD;&#xA;Other elements of the class are Dictionaries of elements that must be drawn on certain screens-- allowing for rapid addition/repositioning of said elements if needed.&#xD;&#xA;	Enhanced Organization and Readability:&#xD;&#xA;While not strictly necessary, the &quot;Globals&quot; class reuces clutter by acting as a centralised repository for these variables and collections. This improves overall readability.&#xD;&#xA;	Scalability for Future Changes/Expansion:&#xD;&#xA;By collectiong game-wide variables, the class assists in expanding upon the existing game machanics and tweaking current implementions if neccessary as the project evolves.&#xD;&#xA;">
+    <Position X="21.305" Y="8.064" Height="3.828" Width="4.67" />
+  </Comment>
+  <Comment CommentText="&quot;Cell&quot; is used in the &quot;Map&quot; class so that each individual tile can learn to have a &quot;type&quot; and &quot;duration&quot;. This helps in more complex logic, such as propagating explosions and setting a tile to a specific type for a certain duration, before changing to another type.">
+    <Position X="21.385" Y="6.698" Height="0.75" Width="5.034" />
+  </Comment>
   <Class Name="BomberManClone.StaticGraphic">
     <Position X="9" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAQAAACAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAA=</HashCode>
-      <FileName>GameCode\BasicGraphics.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="BomberManClone.Animated2D">
-    <Position X="7.75" Y="3.25" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>AAAAgQAAIAAAAABAAAAAAAAAAQAAAAQAAAQQAAAAAAA=</HashCode>
       <FileName>GameCode\BasicGraphics.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -31,26 +33,26 @@
   <Class Name="BomberManClone.Game1">
     <Position X="17" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>EAWAwMgCEAIwBxjEMADSQEEM0xMAQYACpIAAAgGBwAQ=</HashCode>
+      <HashCode>EAWAQMgAEAIQBxDEIABSQEEMwxMAQYACpIAAAgGBwAQ=</HashCode>
       <FileName>GameCode\Game1.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="BomberManClone.GameActor">
-    <Position X="9" Y="7.5" Width="1.75" />
+    <Position X="7.75" Y="3.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAQgAACEAAAAAAAADKAAAAMQEAAACAAAQAABAAAA=</HashCode>
       <FileName>GameCode\GameActor.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="BomberManClone.Globals">
-    <Position X="19.25" Y="6.25" Width="1.75" />
+    <Position X="19.25" Y="8" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAEAAgEECAQACAAAAAAAACAhAAAAAgQAAQAAAAIA=</HashCode>
       <FileName>GameCode\Globals.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="BomberManClone.Cell">
-    <Position X="19.25" Y="10.5" Width="1.5" />
+    <Position X="19.25" Y="6" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
       <FileName>GameCode\Map.cs</FileName>
@@ -59,12 +61,12 @@
   <Class Name="BomberManClone.Map">
     <Position X="19.25" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>KAQACQAQBACAAAAFAAAAAAATAACAAIGASAAAAACEAAA=</HashCode>
+      <HashCode>KAQACQAQBACAAAAFAAAAAAATAACAAIGESAAAAACAAAA=</HashCode>
       <FileName>GameCode\Map.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="BomberManClone.PC">
-    <Position X="9" Y="12.75" Width="2" />
+    <Position X="7.5" Y="8.75" Width="2" />
     <TypeIdentifier>
       <HashCode>BEAECQEMAAkCBAAggCABAQAlAAAAAAAIAFABRAgwABA=</HashCode>
       <FileName>GameCode\PC.cs</FileName>
@@ -92,14 +94,14 @@
     </TypeIdentifier>
   </Class>
   <Enum Name="BomberManClone.BombStates">
-    <Position X="26.25" Y="5.5" Width="1.5" />
+    <Position X="26.25" Y="5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAEAACACAAAA=</HashCode>
       <FileName>GameCode\Bomb.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="BomberManClone.CrateState">
-    <Position X="21.75" Y="5.5" Width="1.5" />
+    <Position X="21.75" Y="5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>IAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAEAACAAAAAA=</HashCode>
       <FileName>GameCode\Crate.cs</FileName>
@@ -129,7 +131,7 @@
   <Enum Name="BomberManClone.PowerUpType">
     <Position X="26.25" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAABIAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAABIAAAAAAAAAAAAAAQBAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>GameCode\PowerUp.cs</FileName>
     </TypeIdentifier>
   </Enum>
@@ -141,7 +143,7 @@
     </TypeIdentifier>
   </Enum>
   <Enum Name="BomberManClone.StateOfButton">
-    <Position X="24" Y="5.5" Width="1.5" />
+    <Position X="24" Y="5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAEAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAEAAA=</HashCode>
       <FileName>GameCode\UI.cs</FileName>
