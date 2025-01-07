@@ -27,6 +27,12 @@ namespace BomberManClone
         private Color m_tint;
         private bool m_bombDroppedHere;
 
+        private int m_numberOfSpeedPUs, m_numberOfRadiusPUs, m_numberOfBombIncreasePUs;
+        public int NumberOfSpeedPus { get { return m_numberOfSpeedPUs; } }
+        public int NumberOfRadiusPUs { get { return m_numberOfRadiusPUs; } }
+
+        public int NumberOfBombIncreasePus { get { return m_numberOfBombIncreasePUs; } }
+
         private bool m_isWalking;
         private SoundEffect m_footstepSfx;
         private SoundEffect m_deathSfx;
@@ -65,6 +71,9 @@ namespace BomberManClone
             m_deathSfx = deathSfx;
             m_tint = tint;
             m_bombDroppedHere = false;
+            m_numberOfSpeedPUs = 0;
+            m_numberOfRadiusPUs = 0;
+            m_numberOfBombIncreasePUs = 0;
         }
         /// <summary>
         /// General Update method: essentially switch between the more relevant and specialised
@@ -497,7 +506,7 @@ namespace BomberManClone
         /// </summary>
         public void IncreaseBombCount()
         {
-             m_numberOfBombs++;
+            m_numberOfBombs++;
         }
         /// <summary>
         ///  Also a method that helps with encapsulation.
@@ -508,6 +517,7 @@ namespace BomberManClone
         {
             if (m_movementSpeed < .1f)
                 m_movementSpeed += .02f;
+            m_numberOfSpeedPUs++;
         }
         /// <summary>
         ///  Same idea as previous method
@@ -519,6 +529,7 @@ namespace BomberManClone
         public void MoreBombsPowerUp()
         {
             m_numberOfBombs ++;
+            m_numberOfBombIncreasePUs++;
         }
         /// <summary>
         ///  Same idea as previous method
@@ -526,6 +537,7 @@ namespace BomberManClone
         public void ExplosionRadiusPowerUp()
         {
             m_explosionRadius ++;
+            m_numberOfRadiusPUs++;
         }
         /// <summary>
         /// Reset Method changes all relevant variables back to the starting ones in order to play
@@ -544,6 +556,9 @@ namespace BomberManClone
             m_targetLocation = m_startPosition.ToVector2();
             m_position = m_startPosition.ToVector2 ();
             m_bombDroppedHere = false;
+            m_numberOfSpeedPUs = 0;
+            m_numberOfRadiusPUs = 0;
+            m_numberOfBombIncreasePUs = 0;
         }
         /// <summary>
         /// Player Draw Method: take in the map's tile dimensions and draw accordingly

@@ -65,6 +65,9 @@ namespace BomberManClone
         Texture2D healthTxr, healthTxrEmpty;
         List<HealthUI> healthDisplay;
 
+        //PowerUpUI
+        List<PowerUpUI> powerUpUIs;
+
         // Sounds
         Dictionary<string, SoundEffect> soundEffects;
 
@@ -89,6 +92,7 @@ namespace BomberManClone
             // Window size and window title settings
             Window.Title = "Supermarket Reloaded";
             Globals.ChangeResolution(1088, 1088);
+            Window.AllowUserResizing = true;
         }
         protected override void Initialize()
         {
@@ -101,6 +105,7 @@ namespace BomberManClone
             soundEffects = new Dictionary<string, SoundEffect>();
             buttons = new Dictionary<string, Button>();
             healthDisplay = new List<HealthUI>();
+            powerUpUIs = new List<PowerUpUI>();
             gamePadStates = new List<GamePadState>();
             oldGamePadStates = new List<GamePadState>();
             players = new List<PC>();
@@ -134,6 +139,9 @@ namespace BomberManClone
             for (int i = 0; i < Globals.HealthDisplayPoints.Count; i++)
             {
                 healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, Globals.HealthDisplayPoints[i]));
+                powerUpUIs.Add(new PowerUpUI(Content.Load<Texture2D>("Objects\\powerup_01"), Content.Load<Texture2D>("Objects\\powerup_03"), Content.Load<Texture2D>("Objects\\powerup_02"), Globals.PowerUpDisplayPoints[i]));
+
+
             };
 
             #region SoundEffects
@@ -168,6 +176,9 @@ namespace BomberManClone
             var startButton = new Button("Start", UIfont,buttonTxr, buttonTxrPressed, Globals.ButtonPositions["startButton"], buttonHoverSfx, maximiseSfx);
             startButton.OnClick += delegate 
             {
+                gamePadStates.Clear();
+                players.Clear();
+                oldGamePadStates.Clear();
                 for (int i = 0; i < numberOfPlayers; i++)
                 {
                     players.Add(new PC(Globals.PlayerSpawnPoints[i], playerTxr, 3, 4, footstepSfx, toombstoneTxr, deathSfx, Globals.PlayerTints[i]));
@@ -369,6 +380,13 @@ namespace BomberManClone
                 healthDisplay[i].UpdateMe(players[i].Health);
             }
 
+            // PowerUpUI update
+            for (int i = 0; i < gamePadStates.Count; i++)
+            {
+                powerUpUIs[i].UpdateMe(players[i].NumberOfSpeedPus,
+                    players[i].NumberOfRadiusPUs, players[i].NumberOfBombIncreasePus);
+            }
+
             // Trak keyboard inputs
             kb_curr = Keyboard.GetState();
             // Track Mouse Position
@@ -440,8 +458,8 @@ namespace BomberManClone
             #region Screen Scaling
             // Completing Scale effect on the screen
             GraphicsDevice.SetRenderTarget(null);
-            _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            _spriteBatch.Draw(_renderTarget, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 1);
+            _spriteBatch.Begin();
+            _spriteBatch.Draw(_renderTarget, GraphicsDevice.Viewport.Bounds, null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 1);
             _spriteBatch.End();
             #endregion
             base.Draw(gt);
@@ -663,6 +681,11 @@ namespace BomberManClone
             foreach (var health in healthDisplay)
             {
                 health.DrawMe(_spriteBatch);
+            }
+            // PowerUp UI
+            foreach (var powerup in powerUpUIs)
+            {
+                powerup.DrawMe(_spriteBatch, UIfont);
             }
 
 #if DEBUG

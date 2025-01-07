@@ -16,6 +16,7 @@ namespace BomberManClone
         public static readonly float PickUpSpawnChance = .33f;
         public static readonly float CrateSpawnChance = .5f;
         public static List<Point> HealthDisplayPoints;
+        public static List<Point> PowerUpDisplayPoints;
         public static Dictionary<string, Point> ButtonPositions;
         /// <summary>
         /// Some variables in this class use the screen resolution to calculate points,
@@ -44,6 +45,16 @@ namespace BomberManClone
                 new Point(ScreenWidth - 64, 0),
                 new Point(0, 12*64)
             };
+
+            PowerUpDisplayPoints = new List<Point>()
+            {
+                new Point(-10, 3*64),
+                new Point(ScreenWidth - 64 - 10, 9*64),
+                new Point(ScreenWidth - 64 - 10, 3*64),
+                new Point(-10, 9*64)
+
+            };
+
 
             ButtonPositions = new Dictionary<string, Point>()
             {

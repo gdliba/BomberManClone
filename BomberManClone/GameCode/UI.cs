@@ -60,6 +60,46 @@ namespace BomberManClone
                 sb.Draw(m_emptyTxr, new Vector2(m_position.X, m_position.Y + m_txr.Height * i), Color.White);
         }
     }
+    class PowerUpUI : StaticGraphic
+    {
+        private int m_numberOfSpeedPickups, m_numberOfExplosionPickups, m_numberOfBombIncreasePickups;
+        private Texture2D m_speedTxr, m_explosionRadiusTxr, m_numberOfBombsTxr;
+        public PowerUpUI(Texture2D speedTxr, Texture2D explosionRadiusTxr, Texture2D numberOfBombsTxr, Point pos) :
+            base(speedTxr, pos)
+        {
+            m_position = pos;
+            m_speedTxr = speedTxr;
+            m_explosionRadiusTxr = explosionRadiusTxr;
+            m_numberOfBombsTxr = numberOfBombsTxr;
+
+        }
+        public void UpdateMe(int numberOfSpeedPickups, int numberOfExplosionRadiusPickups, int numberOfBombIncreasePickups)
+        {
+            m_numberOfSpeedPickups = numberOfSpeedPickups;
+            m_numberOfExplosionPickups = numberOfExplosionRadiusPickups;
+            m_numberOfBombIncreasePickups = numberOfBombIncreasePickups;
+        }
+        public void DrawMe(SpriteBatch sb, SpriteFont font)
+        {
+            int Ycorrection = 28;
+            int Xcorrection = 10;
+            // Speed
+            sb.Draw(m_speedTxr, new Vector2(m_position.X, m_position.Y), Color.White);
+            sb.DrawString(font, m_numberOfSpeedPickups.ToString(), new Vector2(m_position.X + m_speedTxr.Width - Xcorrection,
+                m_position.Y + Ycorrection), Color.White);
+
+            //Radius
+            sb.Draw(m_explosionRadiusTxr, new Vector2(m_position.X, m_position.Y + m_speedTxr.Height), Color.White);
+            sb.DrawString(font, m_numberOfExplosionPickups.ToString(), new Vector2(m_position.X + m_speedTxr.Width - Xcorrection,
+                m_position.Y + m_speedTxr.Height + Ycorrection), Color.White);
+
+
+            //Bomb Increase
+            sb.Draw(m_numberOfBombsTxr, new Vector2(m_position.X, m_position.Y + 2*(m_speedTxr.Height)), Color.White);
+            sb.DrawString(font, m_numberOfBombIncreasePickups.ToString(), new Vector2(m_position.X + m_speedTxr.Width - Xcorrection,
+                m_position.Y + 2*(m_speedTxr.Height) + Ycorrection), Color.White);
+        }
+    }
 
     enum StateOfButton
     {
