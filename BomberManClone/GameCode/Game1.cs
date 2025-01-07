@@ -136,13 +136,13 @@ namespace BomberManClone
             // Health UI
             healthTxr = Content.Load<Texture2D>("UI\\playerFace");
             healthTxrEmpty = Content.Load<Texture2D>("UI\\playerFace_empty");
-            for (int i = 0; i < Globals.HealthDisplayPoints.Count; i++)
-            {
-                healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, Globals.HealthDisplayPoints[i]));
-                powerUpUIs.Add(new PowerUpUI(Content.Load<Texture2D>("Objects\\powerup_01"), Content.Load<Texture2D>("Objects\\powerup_03"), Content.Load<Texture2D>("Objects\\powerup_02"), Globals.PowerUpDisplayPoints[i]));
+            //for (int i = 0; i < Globals.HealthDisplayPoints.Count; i++)
+            //{
+            //    healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, Globals.HealthDisplayPoints[i]));
+            //    powerUpUIs.Add(new PowerUpUI(Content.Load<Texture2D>("Objects\\powerup_01"), Content.Load<Texture2D>("Objects\\powerup_03"), Content.Load<Texture2D>("Objects\\powerup_02"), Globals.PowerUpDisplayPoints[i]));
 
 
-            };
+            //};
 
             #region SoundEffects
             // SoundEffects
@@ -179,11 +179,17 @@ namespace BomberManClone
                 gamePadStates.Clear();
                 players.Clear();
                 oldGamePadStates.Clear();
+                healthDisplay.Clear();
+                powerUpUIs.Clear();
                 for (int i = 0; i < numberOfPlayers; i++)
                 {
+                    healthDisplay.Add(new HealthUI(healthTxr, healthTxrEmpty, Globals.HealthDisplayPoints[i]));
+                    powerUpUIs.Add(new PowerUpUI(Content.Load<Texture2D>("Objects\\powerup_01"), Content.Load<Texture2D>("Objects\\powerup_03"), Content.Load<Texture2D>("Objects\\powerup_02"), Globals.PowerUpDisplayPoints[i]));
+
                     players.Add(new PC(Globals.PlayerSpawnPoints[i], playerTxr, 3, 4, footstepSfx, toombstoneTxr, deathSfx, Globals.PlayerTints[i]));
                     gamePadStates.Add(new GamePadState());
                     oldGamePadStates.Add(new GamePadState());
+
                 }
                 ChangeState(GameState.InPlay); 
             };
@@ -208,7 +214,7 @@ namespace BomberManClone
             var restartButton = new Button("Restart", UIfont, buttonTxr, buttonTxrPressed, Globals.ButtonPositions["startButton"], buttonHoverSfx, maximiseSfx);
             restartButton.OnClick += delegate
             {
-                for (int i = 0; i < numberOfPlayers; i++)
+                for (int i = 0; i < players.Count; i++)
                 {
                     players[i].Reset();
                 }
@@ -218,7 +224,11 @@ namespace BomberManClone
 
             var mainMenuButton = new Button("Main Menu", UIfont, buttonTxr, buttonTxrPressed, Globals.ButtonPositions["exitButton"], buttonHoverSfx, minimiseSfx);
             mainMenuButton.OnClick += delegate
-            { 
+            {
+                for (int i = 0; i < players.Count; i++)
+                {
+                    players[i].Reset();
+                }
                 ChangeState(GameState.Start);
             };
             buttons.Add("Main Menu", mainMenuButton);
